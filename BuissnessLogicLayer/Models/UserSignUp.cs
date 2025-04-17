@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccessLayer.Models
+namespace BuissnessLogicLayer.Models
 {
-    public class User
+    public class UserSignUp
     {
-        public Guid Id { get; set; }
+        [Required]
         public string FirstName { get; set; }
+        [Required]
         public string LastName { get; set; }
+        [Required]
         public string Email { get; set; }
-        public string PasswordHash { get; set; }
-        public Guid RoleId { get; set; }
-
-
-        public Role Role { get; set; }
+        [Required]
+        public string Password { get; set; }
     }
 }

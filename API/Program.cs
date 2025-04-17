@@ -1,3 +1,11 @@
+using BuissnessLogicLayer.Models;
+using BuissnessLogicLayer.Profiles;
+using BuissnessLogicLayer.Services;
+using DataAccessLayer.Auth;
+using DataAccessLayer.Data;
+using DataAccessLayer.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +14,18 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<UsersDbContext>(options =>
+{
+    options.UseSqlServer(connectionString: builder.Configuration.GetConnectionString("UsersMangement"));
+});
+builder.Services.AddScoped<IPasswordHasher,  PasswordHasher>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<UsersService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
+builder.Services.AddAutoMapper(typeof(UsersProfile).Assembly);
 
 var app = builder.Build();
 

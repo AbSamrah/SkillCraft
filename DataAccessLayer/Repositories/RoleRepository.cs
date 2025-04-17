@@ -32,7 +32,7 @@ namespace DataAccessLayer.Repositories
             return role;
         }
 
-        public async Task<IEnumerable<Role>> GetAllAsnc()
+        public async Task<List<Role>> GetAllAsnc()
         {
             return await _usersDbContext.Roles.ToListAsync();
         }
@@ -64,6 +64,11 @@ namespace DataAccessLayer.Repositories
             await _usersDbContext.SaveChangesAsync();
 
             return role;
+        }
+
+        public async Task<Role> GetByTitleAsync(string title)
+        {
+            return await _usersDbContext.Roles.FirstOrDefaultAsync(x => x.Title == title);
         }
     }
 }

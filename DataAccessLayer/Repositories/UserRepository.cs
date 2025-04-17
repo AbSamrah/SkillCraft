@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.Data;
+﻿using DataAccessLayer.Auth;
+using DataAccessLayer.Data;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,11 +13,14 @@ namespace DataAccessLayer.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly UsersDbContext _usersDbContext;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UserRepository(UsersDbContext usersDbContext) {
+        public UserRepository(UsersDbContext usersDbContext, IPasswordHasher passwordHasher) {
             _usersDbContext = usersDbContext;
+            _passwordHasher = passwordHasher;
         }
-        public async Task<User> AddAsync(User user)
+
+        public async Task<User> AddAsync(User user) 
         {
             user.Id = Guid.NewGuid();
             await _usersDbContext.AddAsync(user);
@@ -37,9 +41,23 @@ namespace DataAccessLayer.Repositories
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
+        public async Task<List<User>> GetAllAsync(string? email=null , string? firstName=null , string? lastName = null)
         {
-            return await _usersDbContext.Users.ToListAsync();
+            var query = _usersDbContext.Users.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                query = query.Where(u => u.Email.Contains(email));
+            }
+            if (!string.IsNullOrWhiteSpace(firstName))
+            {
+                query = query.Where(u => u.FirstName.Contains(firstName));
+            }
+            if (!string.IsNullOrWhiteSpace(lastName))
+            {
+                query = query.Where(u => u.LastName.Contains(lastName));
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<User> GetAsync(Guid id)
@@ -47,9 +65,20 @@ namespace DataAccessLayer.Repositories
             return await _usersDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<User> UpdateAsync(Guid id, User user)
+        public async Task<User> GetByEmailAsync(string email)
         {
-            var existingUser = await _usersDbContext.Users.FirstOrDefaultAsync(x=>x.Id == id);
+            var user = await _usersDbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+            if (user is null)
+            {
+                return null;
+            }
+            user.Role = await _usersDbContext.Roles.FirstOrDefaultAsync(x => x.Id == user.RoleId);
+            return user;
+        }
+
+        public async Task<User> UpdateAsync(User user)
+        {
+            var existingUser = await _usersDbContext.Users.FirstOrDefaultAsync(x=>x.Id == user.Id);
 
             if (existingUser is null)
             {
@@ -65,6 +94,16 @@ namespace DataAccessLayer.Repositories
 
             return existingUser;
 
+        }
+
+        public async Task<bool> UserExistsAsync(string email)
+        {
+            var user = await _usersDbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+            if (user is null)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
