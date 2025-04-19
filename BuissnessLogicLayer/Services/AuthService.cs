@@ -2,13 +2,11 @@
 using DataAccessLayer.Auth;
 using DataAccessLayer.Models;
 using DataAccessLayer.Repositories;
-using Microsoft.AspNetCore.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using User = BuissnessLogicLayer.Models.UserProfileDto;
 
 namespace BuissnessLogicLayer.Services
 {
