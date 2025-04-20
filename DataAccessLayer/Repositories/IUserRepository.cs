@@ -9,7 +9,7 @@ namespace DataAccessLayer.Repositories
 {
     public interface IUserRepository
     {
-        public Task<List<User>> GetAllAsync(string? email=null, string? firstName=null, string? lastName=null);
+        public Task<List<User>> GetAllAsync(string? email=null, string? firstName=null, string? lastName=null, int pageNumber = 0, int pageSize = 10);
         public Task<User> GetAsync(Guid id);
         public Task<User> GetByEmailAsync(string email);
         public Task<User> UpdateAsync(User user);

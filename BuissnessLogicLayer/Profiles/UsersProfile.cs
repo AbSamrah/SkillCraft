@@ -14,13 +14,17 @@ namespace BuissnessLogicLayer.Profiles
         public UsersProfile()
         {
 
-            CreateMap<User, UserProfileDto>();
+            CreateMap<User, UpdateUserRequest>()
+              .ForMember(dest => dest.Role,
+              opt => opt.MapFrom(src => src.Role.Title));
             
-            
+            CreateMap<User, UserDto>().ForMember(dest => dest.Role,
+              opt => opt.MapFrom(src => src.Role.Title));
+
             CreateMap<AddUserRequest, User>().ReverseMap();
 
 
-            CreateMap<Models.UserLogin, DataAccessLayer.Models.User>().ReverseMap();
+            CreateMap<UserLogin, User>().ReverseMap();
         }
     }
 }

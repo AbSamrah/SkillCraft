@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using BuissnessLogicLayer.Filters;
 using BuissnessLogicLayer.Models;
 using DataAccessLayer.Auth;
 using DataAccessLayer.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,61 +51,72 @@ namespace BuissnessLogicLayer.Services
             return addUserRequest;
         }
 
-        public async Task<UserProfileDto> GetByIdAsync(Guid id)
+        public async Task<UserDto> GetByIdAsync(Guid id)
         {
             var user = await _userRepository.GetAsync(id);
             if(user is null)
             {
                 return null;
             }
-            var userDto = _mapper.Map<UserProfileDto>(user);
+            user.Role = await _roleRepository.GetAsync(user.RoleId);
+            var userDto = _mapper.Map<UserDto>(user);
             return userDto;
         }
 
-        public async Task<List<UserProfileDto>> GetAllAsync(string email, string firstName, string lastName)
+        public async Task<List<UserDto>> GetAllAsync(UserFilter userFilter)
         {
-            var users = await _userRepository.GetAllAsync(email,firstName,lastName);
-            return _mapper.Map<List<UserProfileDto>>(users);
+            
+            var users = await _userRepository.GetAllAsync(userFilter.Email, userFilter.FirstName, userFilter.LastName, userFilter.PageNumber, userFilter.PageSize);
+            return _mapper.Map<List<UserDto>>(users);
         }
 
-        public async Task<UserDto> UpdateAsync(UserDto userDto)
+        public async Task<UpdateUserRequest> UpdateAsync(UpdateUserRequest updateUserRequest)
         {
-            var user = await _userRepository.GetAsync(userDto.Id);
+            var user = await _userRepository.GetByEmailAsync(updateUserRequest.Email);
             if( user is null)
             {
                 return null;
             }
-            user.FirstName = userDto.FirstName;
-            user.LastName = userDto.LastName;
-            user.Email = userDto.Email;
-            user.PasswordHash = _passwordHasher.Hash(userDto.Password);
+            user.FirstName = updateUserRequest.FirstName;
+            user.LastName = updateUserRequest.LastName;
+            user.Email = updateUserRequest.Email;
+            user.PasswordHash = _passwordHasher.Hash(updateUserRequest.Password);
+
+            var role = await _roleRepository.GetByTitleAsync(updateUserRequest.Role);
+            if (role is null)
+            {
+                throw new Exception("This Role doesn't exist.");
+            }
+            user.RoleId = role.Id;
+
             user = await _userRepository.UpdateAsync(user);
             if (user is null)
             {
                 throw new Exception("Some thing went wrong.");
             }
-            userDto = _mapper.Map<UserDto>(user);
-            return userDto;
+            updateUserRequest = _mapper.Map<UpdateUserRequest>(user);
+            updateUserRequest.Password = null;
+            return updateUserRequest;
         }
 
-        public async Task<UserProfileDto> DeleteAsync(Guid id)
+        public async Task<UpdateUserRequest> DeleteAsync(Guid id)
         {
             var user = await _userRepository.DeleteAsync(id);
             if (user is null)
             {
                 return null;
             }
-            return _mapper.Map<UserProfileDto>(user);
+            return _mapper.Map<UpdateUserRequest>(user);
         }
 
-        public async Task<UserProfileDto> GetByEmailAsync(string email)
+        public async Task<UpdateUserRequest> GetByEmailAsync(string email)
         {
             var user = await _userRepository.GetByEmailAsync(email);
             if (user is null)
             {
                 return null;
             }
-            return _mapper.Map<UserProfileDto>(user);
+            return _mapper.Map<UpdateUserRequest>(user);
         }
     }
 }

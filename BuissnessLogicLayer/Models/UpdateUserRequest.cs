@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BuissnessLogicLayer.Models
 {
-    public class AddUserRequest
+    public class UpdateUserRequest
     {
         [Required]
         public string FirstName { get; set; }
@@ -18,10 +18,9 @@ namespace BuissnessLogicLayer.Models
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [PasswordPropertyText]
+        [MinLength(8)]
         public string Password { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Please enter the role.")]
         public string Role { get; set; }
-
     }
 }

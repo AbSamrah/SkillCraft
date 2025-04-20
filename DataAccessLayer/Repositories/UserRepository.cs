@@ -25,6 +25,7 @@ namespace DataAccessLayer.Repositories
             user.Id = Guid.NewGuid();
             await _usersDbContext.AddAsync(user);
             await _usersDbContext.SaveChangesAsync();
+            user.PasswordHash = null;
             return user;
         }
 
@@ -41,9 +42,14 @@ namespace DataAccessLayer.Repositories
             return user;
         }
 
-        public async Task<List<User>> GetAllAsync(string? email=null , string? firstName=null , string? lastName = null)
+        public async Task<List<User>> GetAllAsync(string? email = null, string? firstName = null, string? lastName = null, int pageNumber = 0, int pageSize = 10)
         {
-            var query = _usersDbContext.Users.AsQueryable();
+            var query = _usersDbContext.Users.OrderBy(u => u.FirstName)
+                .ThenBy(u => u.LastName)
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
+                .Include(u => u.Role)
+                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(email))
             {
                 query = query.Where(u => u.Email.Contains(email));
@@ -62,7 +68,7 @@ namespace DataAccessLayer.Repositories
 
         public async Task<User> GetAsync(Guid id)
         {
-            return await _usersDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+            return await _usersDbContext.Users.Include(u => u.Role).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<User> GetByEmailAsync(string email)
@@ -89,9 +95,10 @@ namespace DataAccessLayer.Repositories
             existingUser.LastName = user.LastName;
             existingUser.Email = user.Email;
             existingUser.PasswordHash = user.PasswordHash;
-
+            existingUser.RoleId = user.RoleId;
             await _usersDbContext.SaveChangesAsync();
 
+            existingUser.PasswordHash = null;
             return existingUser;
 
         }

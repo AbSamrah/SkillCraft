@@ -32,7 +32,7 @@ namespace BuissnessLogicLayer.Services
                 throw new Exception("Email already exists.");
             }
 
-            DataAccessLayer.Models.User user = new DataAccessLayer.Models.User();
+            User user = new DataAccessLayer.Models.User();
 
             user.FirstName = userSignUp.FirstName;
             user.LastName = userSignUp.LastName;
@@ -57,7 +57,7 @@ namespace BuissnessLogicLayer.Services
                 throw new Exception("User not found.");
             }
 
-            DataAccessLayer.Models.User user = await _userRepository.GetByEmailAsync(userLogin.Email);
+            User user = await _userRepository.GetByEmailAsync(userLogin.Email);
             if (_passwordHasher.Verify(userLogin.Password, user.PasswordHash))
             {
                 var token = await _tokenService.GenerateToken(user);
