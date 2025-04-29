@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{02EA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserManagement", "UserManagement", "{0CB706F0-B43A-47A6-9F56-9D8C33CAB04B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{ED502FC8-62B5-4A05-A905-A7EDDF22F529}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersManagement.DataAccessLayer", "DataAccessLayer\UsersManagement.DataAccessLayer.csproj", "{ED502FC8-62B5-4A05-A905-A7EDDF22F529}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersManagement.BuissnessLogicLayer", "BuissnessLogicLayer\UsersManagement.BuissnessLogicLayer.csproj", "{117EADE4-58DA-4740-A647-8B703AA280D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{956724EB-4EB4-4695-BE3C-BA7A0CC42B4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersManagement.API", "API\UsersManagement.API.csproj", "{956724EB-4EB4-4695-BE3C-BA7A0CC42B4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
