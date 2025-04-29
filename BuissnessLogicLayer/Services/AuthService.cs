@@ -1,4 +1,5 @@
-﻿using BuissnessLogicLayer.Models;
+﻿using AutoMapper;
+using BuissnessLogicLayer.Models;
 using DataAccessLayer.Auth;
 using DataAccessLayer.Models;
 using DataAccessLayer.Repositories;
@@ -16,13 +17,16 @@ namespace BuissnessLogicLayer.Services
         private IPasswordHasher _passwordHasher;
         private ITokenService _tokenService;
         private IRoleRepository _roleRepository;
+        private readonly IMapper _mapper;
 
-        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher, ITokenService tokenService, IRoleRepository roleRepository)
+        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher,
+            ITokenService tokenService, IRoleRepository roleRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _tokenService = tokenService;
             _roleRepository = roleRepository;
+            _mapper = mapper;
         }
 
         public async Task<string> SignUpAsync(UserSignUp userSignUp)
@@ -67,6 +71,29 @@ namespace BuissnessLogicLayer.Services
             {
                 throw new Exception("Password is incorrect.");
             }
+        }
+
+        public async Task<UserDto> ChangePasswordAsync(ChangePasswordRequest request)
+        {
+            var user = await _userRepository.GetAsync(request.Id);
+            if(user is null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            if (_passwordHasher.Verify(request.OldPassword, user.PasswordHash))
+            {
+                user.PasswordHash = _passwordHasher.Hash(request.NewPassword);
+                user = await _userRepository.UpdateAsync(user);
+
+                UserDto userDto = _mapper.Map<UserDto>(user);
+                return userDto;
+            }
+            else
+            {
+                throw new Exception("Wrong Password.");
+            }
+
         }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : Controller
@@ -47,7 +47,6 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddUserRequest user)
         {
             user = await _usersService.AddAsync(user);
@@ -55,11 +54,10 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            return Ok(user);
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
         }
 
         [HttpDelete("{id}")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
             var user = await _usersService.DeleteAsync(id);
@@ -71,7 +69,6 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update([FromBody]UpdateUserRequest updateUserRequest)
         {
             updateUserRequest = await _usersService.UpdateAsync(updateUserRequest);

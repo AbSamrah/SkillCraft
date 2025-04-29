@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BuissnessLogicLayer\BuissnessLogicLayer.csproj" />
+    <ProjectReference Include="..\BuissnessLogicLayer\UsersManagement.BuissnessLogicLayer.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,7 @@ namespace API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
+
         public AuthController(AuthService authService)
         {
             _authService = authService;
@@ -60,6 +61,18 @@ namespace API.Controllers
                 });
             }
 
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
+        {
+            var user = await _authService.ChangePasswordAsync(changePasswordRequest);
+            if (user is null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(user);
         }
     }
 }

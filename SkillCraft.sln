@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserManagement", "UserManag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{ED502FC8-62B5-4A05-A905-A7EDDF22F529}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuissnessLogicLayer", "BuissnessLogicLayer\BuissnessLogicLayer.csproj", "{117EADE4-58DA-4740-A647-8B703AA280D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersManagement.BuissnessLogicLayer", "BuissnessLogicLayer\UsersManagement.BuissnessLogicLayer.csproj", "{117EADE4-58DA-4740-A647-8B703AA280D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{956724EB-4EB4-4695-BE3C-BA7A0CC42B4C}"
 EndProject

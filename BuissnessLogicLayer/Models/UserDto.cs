@@ -21,9 +21,6 @@ namespace BuissnessLogicLayer.Models
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [PasswordPropertyText]
-        public string Password { get; set; }
-        [Required]
         public string Role { get; set; }
     }
 }
