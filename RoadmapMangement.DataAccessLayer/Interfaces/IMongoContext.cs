@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 
 namespace RoadmapMangement.DataAccessLayer.Interfaces
 {
-    public interface IMongoContext: IDisposable
-    {   
+    public interface IMongoContext : IDisposable
+    {
         void AddCommand(Func<Task> func);
         Task<int> SaveChanges();
         IMongoCollection<T> GetCollection<T>(string name);
-        
+
+        // Add these methods for better transaction support
+        //IClientSessionHandle StartSession();
+        //Task WithTransactionAsync(Func<IClientSessionHandle, Task> action);
     }
 }

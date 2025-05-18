@@ -12,7 +12,7 @@ namespace RoadmapMangement.DataAccessLayer.Interfaces
         void Add(TEntity entity);
         Task<TEntity> GetById(string id);
         Task<List<TEntity>> GetAll();
-        void Update(TEntity entity);
+        Task Update(TEntity entity);
         void Remove(string id);
     }
 }

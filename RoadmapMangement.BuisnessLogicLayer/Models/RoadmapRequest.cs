@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 
 namespace RoadmapMangement.BuisnessLogicLayer.Models
 {
-    public class StepDto: StepRequest
+    public class RoadmapRequest
     {
-        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTime? Duration { get; set; }
+        public decimal Salary { get; set; }
     }
 }

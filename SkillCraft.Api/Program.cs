@@ -11,6 +11,7 @@ using RoadmapMangement.DataAccessLayer.Data;
 using RoadmapMangement.DataAccessLayer.Interfaces;
 using RoadmapMangement.DataAccessLayer.Repositories;
 using RoadmapMangement.DataAccessLayer.Uow;
+using UsersManagement.BuissnessLogicLayer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,13 +35,18 @@ builder.Services.AddDbContext<UsersDbContext>(options =>
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+builder.Services.AddScoped<IRoadmapRepository, RoadmapRepository>();
+builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<UsersService>();
+builder.Services.AddScoped<RolesService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IMongoContext, RoadmapDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<StepsService>();
+builder.Services.AddScoped<MilestonesService>();
+builder.Services.AddScoped<RoadmapsService>();
 builder.Services.AddScoped<IMongoContext, RoadmapDbContext>();
 
 builder.Services.AddAutoMapper(typeof(UsersProfile).Assembly);

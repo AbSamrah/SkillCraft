@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace RoadmapMangement.BuisnessLogicLayer.Profiles
 {
-    public class StepsProfile: Profile
+    public class MileStonesProfile : Profile
     {
-        public StepsProfile()
+        public MileStonesProfile()
         {
-            CreateMap<Step, StepDto>();
+            CreateMap<Milestone, MilestoneDto>();
 
-            CreateMap<AddStepRequest, Step>();
+            CreateMap<AddMilestoneRequest, Milestone>();
 
-            CreateMap<UpdateStepRequest, Step>();
+            CreateMap<UpdateMilestoneRequest, Milestone>();
 
-            CreateMap<Step, StepName>().ReverseMap();
+            CreateMap<Milestone, MilestoneName>().ReverseMap();
         }
     }
 }

@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace RoadmapMangement.DataAccessLayer.Models
 {
-    public class Step: Entity
+    public class Step : Entity
     {
+        [BsonElement("isCompleted")]
         public bool IsCompleted { get; set; }
     }
 }

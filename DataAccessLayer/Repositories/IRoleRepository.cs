@@ -9,7 +9,7 @@ namespace DataAccessLayer.Repositories
 {
     public interface IRoleRepository
     {
-        public Task<List<Role>> GetAllAsnc();
+        public Task<List<Role>> GetAllAsync();
         public Task<Role> GetAsync(Guid id);
         public Task<Role> GetByTitleAsync(string title);
         public Task<Role> DeleteAsync(Guid id);

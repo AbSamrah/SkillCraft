@@ -32,7 +32,7 @@ namespace DataAccessLayer.Repositories
             return role;
         }
 
-        public async Task<List<Role>> GetAllAsnc()
+        public async Task<List<Role>> GetAllAsync()
         {
             return await _usersDbContext.Roles.ToListAsync();
         }

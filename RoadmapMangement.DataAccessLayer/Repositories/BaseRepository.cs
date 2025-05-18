@@ -24,9 +24,13 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
 
         public virtual void Add(TEntity entity)
         {
-            if (string.IsNullOrEmpty(entity.Id) || !ObjectId.TryParse(entity.Id, out _))
+            if (string.IsNullOrEmpty(entity.Id))
             {
                 entity.Id = ObjectId.GenerateNewId().ToString();
+            }
+            else if (!ObjectId.TryParse(entity.Id, out _))
+            {
+                throw new ArgumentException("ID must be a valid 24-character hex string");
             }
 
             _context.AddCommand(() => _dbSet.InsertOneAsync(entity));
@@ -50,15 +54,34 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
             return all.ToList();
         }
 
-        public virtual void Update(TEntity entity)
+        public virtual async Task Update(TEntity entity)
         {
-            _context.AddCommand(() => _dbSet.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", entity.Id), entity));
+            if (!ObjectId.TryParse(entity.Id, out var objectId))
+            {
+                throw new ArgumentException("Invalid ID format");
+            }
+
+            _context.AddCommand(async () =>
+            {
+                var filter = Builders<TEntity>.Filter.Eq("_id", objectId);
+                var result = await _dbSet.ReplaceOneAsync(filter, entity);
+            });
+
         }
 
         public virtual void Remove(string id)
         {
-            _context.AddCommand(() => _dbSet.DeleteOneAsync(Builders<TEntity>.Filter.Eq("_id", id)));
+            if (!ObjectId.TryParse(id, out var objectId))
+            {
+                throw new ArgumentException("Invalid ID format");
+            }
+
+            _context.AddCommand(() => _dbSet.DeleteOneAsync(
+                Builders<TEntity>.Filter.Eq("_id", objectId)
+            ));
         }
+
+        
 
         public void Dispose()
         {
