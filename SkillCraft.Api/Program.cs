@@ -5,6 +5,7 @@ using DataAccessLayer.Data;
 using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuizesManagement.BuisnessLogicLayer.Profiles;
 using RoadmapMangement.BuisnessLogicLayer.Profiles;
 using RoadmapMangement.BuisnessLogicLayer.Services;
 using RoadmapMangement.DataAccessLayer.Data;
@@ -42,15 +43,15 @@ builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<RolesService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IMongoContext, RoadmapDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<StepsService>();
 builder.Services.AddScoped<MilestonesService>();
 builder.Services.AddScoped<RoadmapsService>();
-builder.Services.AddScoped<IMongoContext, RoadmapDbContext>();
+builder.Services.AddScoped<IRoadmapDbContext, RoadmapDbContext>();
 
 builder.Services.AddAutoMapper(typeof(UsersProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(StepsProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(QuizesProfile).Assembly);
 
 builder.Services.AddCors(options =>
 {

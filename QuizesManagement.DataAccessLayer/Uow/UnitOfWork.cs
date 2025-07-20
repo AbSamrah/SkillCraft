@@ -1,17 +1,17 @@
-﻿using RoadmapMangement.DataAccessLayer.Interfaces;
+﻿using QuizesManagement.DataAccessLayer.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoadmapMangement.DataAccessLayer.Uow
+namespace QuizesManagement.DataAccessLayer.Uow
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly IRoadmapDbContext _context;
+        private readonly IQuizDbContext _context;
 
-        public UnitOfWork(IRoadmapDbContext context)
+        public UnitOfWork(IQuizDbContext context)
         {
             _context = context;
         }
@@ -26,6 +26,6 @@ namespace RoadmapMangement.DataAccessLayer.Uow
         public void Dispose()
         {
             _context.Dispose();
-         }
+        }
     }
 }

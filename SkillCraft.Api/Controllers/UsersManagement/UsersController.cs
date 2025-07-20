@@ -26,7 +26,7 @@ namespace API.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var user = await _usersService.GetByIdAsync(id);
@@ -37,7 +37,7 @@ namespace API.Controllers
             return Ok(user);
         }
 
-        [HttpGet("{email}")]
+        [HttpGet("{email:alpha}")]
         public async Task<IActionResult> GetByEmail(string email)
         {
             var user = await _usersService.GetByEmailAsync(email);
@@ -50,7 +50,7 @@ namespace API.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Add(AddUserRequest user)
-        {
+        {   
             user = await _usersService.AddAsync(user);
             if (user is null)
             {
@@ -70,7 +70,7 @@ namespace API.Controllers
             return Ok(user);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] UpdateUserRequest updateUserRequest)
         {
             updateUserRequest = await _usersService.UpdateAsync(updateUserRequest);

@@ -48,7 +48,7 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
             return Ok(roadmap);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             var roadmap = await _roadmapsService.DeleteAsync(id);
@@ -74,12 +74,5 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
             return Ok(roadmap);
         }
 
-        //[HttpPut]
-        //[Route("/addmilestone/{id}")]
-        //public async Task<IActionResult> AddMilestoneAsync(RoadmapMilestone roadmapMilestone)
-        //{
-        //    var roadmap = await _roadmapsService.AddMilestone(roadmapMilestone);
-        //    return Ok(roadmap);
-        //}
     }
 }

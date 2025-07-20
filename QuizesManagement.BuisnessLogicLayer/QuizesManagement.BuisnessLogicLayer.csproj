@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RoadmapMangement.DataAccessLayer\RoadmapMangement.DataAccessLayer.csproj" />
+    <ProjectReference Include="..\QuizesManagement.DataAccessLayer\QuizesManagement.DataAccessLayer.csproj" />
   </ItemGroup>
 
 </Project>

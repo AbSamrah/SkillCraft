@@ -103,21 +103,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
 
         }
 
-        //public async Task<MilestoneDto> AddSteps(MilestoneStep milestoneStep)
-        //{
-        //    var milestone = await _milestonesRepository.GetById(milestoneStep.MilestoneId);
-        //    if (milestone == null)
-        //        throw new Exception("Milestone not found.");
-
-        //    // Add step IDs to the milestone
-        //    //var update = Builders<Milestone>.Update
-        //    //    .PushEach(x => x.StepIds, milestoneStep.StepIds);
-
-        //    await _milestonesRepository.AddStepsToMilestone(milestoneStep.MilestoneId, milestoneStep.StepIds);
-        //    await _uow.Commit();
-
-        //    return await Get(milestoneStep.MilestoneId);
-        //}
+        
 
 
     }

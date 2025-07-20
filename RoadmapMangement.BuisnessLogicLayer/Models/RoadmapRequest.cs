@@ -13,6 +13,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime? Duration { get; set; }
+        public List<string> Tags { get; set; }
         public decimal Salary { get; set; }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using BuissnessLogicLayer.Models;
 using BuissnessLogicLayer.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowReactApp")]
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;

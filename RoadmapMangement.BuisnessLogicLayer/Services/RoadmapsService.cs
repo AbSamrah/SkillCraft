@@ -14,14 +14,14 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
     public class RoadmapsService
     {
         private readonly IRoadmapRepository _roadmapsRepository;
-        private readonly IRepository<Milestone> _milestoneRepository;
+        //private readonly IRepository<Milestone> _milestoneRepository;
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
 
-        public RoadmapsService(IRoadmapRepository roadmapsRepository, IUnitOfWork uow, IMapper mapper, IRepository<Milestone> milestoneRepository)
+        public RoadmapsService(IRoadmapRepository roadmapsRepository, IUnitOfWork uow, IMapper mapper/*, IRepository<Milestone> milestoneRepository*/)
         {
             _roadmapsRepository = roadmapsRepository;
-            _milestoneRepository = milestoneRepository;
+            //_milestoneRepository = milestoneRepository;
             _uow = uow;
             _mapper = mapper;
         }
@@ -107,25 +107,5 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
 
         }
 
-        //public async Task<RoadmapDto> AddMilestone(RoadmapMilestone roadmapMilestone)
-        //{
-        //    var roadmap = await _roadmapsRepository.GetById(roadmapMilestone.RoadmapId);
-        //    if (roadmap == null)
-        //        throw new Exception("Roadmap not found.");
-
-        //    roadmap.Milestones ??= new List<Milestone>();
-
-        //    var milestones = await _milestoneRepository.GetByIdsAsync(roadmapMilestone.MilestonesIds);
-        //    if (milestones == null || !milestones.Any())
-        //        throw new Exception("No valid milestone found.");
-
-        //    roadmap.Milestones.AddRange(milestones);
-
-        //    _roadmapsRepository.Update(roadmap);
-        //    await _uow.Commit();
-
-        //    return _mapper.Map<RoadmapDto>(roadmap);
-
-        //}
     }
 }

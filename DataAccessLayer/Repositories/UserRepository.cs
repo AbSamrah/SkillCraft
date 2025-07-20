@@ -46,7 +46,7 @@ namespace DataAccessLayer.Repositories
         {
             var query = _usersDbContext.Users.OrderBy(u => u.FirstName)
                 .ThenBy(u => u.LastName)
-                .Skip(pageNumber * pageSize)
+                .Skip((pageNumber)* pageSize)
                 .Take(pageSize)
                 .Include(u => u.Role)
                 .AsQueryable();

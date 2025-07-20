@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using RoadmapMangement.DataAccessLayer.Interfaces;
 using RoadmapMangement.DataAccessLayer.Models;
 using System;
@@ -11,7 +12,7 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
 {
     public class RoadmapRepository : BaseRepository<Roadmap>, IRoadmapRepository
     {
-        public RoadmapRepository(IMongoContext context) : base(context)
+        public RoadmapRepository(IRoadmapDbContext context) : base(context)
         {
         }
 
@@ -22,29 +23,61 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
             return await result.ToListAsync();
         }
 
-        //public async Task<bool> AddMilestoneToRoadmap(string roadmapId, Milestone milestone)
-        //{
-        //    var roadmapFilter = Builders<Roadmap>.Filter.Eq(x => x.Id, roadmapId);
-        //    var update = Builders<Roadmap>.Update
-        //        .Push(x => x.MilestoneIds, milestone.Id);
-
-        //    var result = await _dbSet.UpdateOneAsync(roadmapFilter, update);
-        //    return result.ModifiedCount > 0;
-        //}
 
         public override async Task<Roadmap> GetById(string roadmapId)
         {
+
             var roadmap = await _dbSet.Find(r => r.Id == roadmapId).FirstOrDefaultAsync();
             if (roadmap == null || roadmap.MilestoneIds?.Any() != true)
                 return roadmap;
 
-            var milestones = await _context.GetCollection<Milestone>("Milestone")
+            var unorderedMilestones = await _context.GetCollection<Milestone>("Milestone")
                 .Find(m => roadmap.MilestoneIds.Contains(m.Id))
                 .ToListAsync();
 
-            roadmap.Milestones = milestones;
+            // Reorder the milestones to match the order in the MilestoneIds list
+            var milestoneDict = unorderedMilestones.ToDictionary(m => m.Id);
+            var orderedMilestones = roadmap.MilestoneIds
+                                          .Where(id => milestoneDict.ContainsKey(id))
+                                          .Select(id => milestoneDict[id])
+                                          .ToList();
+
+            roadmap.Milestones = orderedMilestones;
             return roadmap;
+
+            //    if (!ObjectId.TryParse(roadmapId, out var objectId))
+            //    {
+            //        return null;
+            //    }
+
+            //    //var roadmap = await _dbSet.Find(r => r.Id == roadmapId).FirstOrDefaultAsync();
+
+            //    var filter = Builders<Roadmap>.Filter.Eq("_id", ObjectId.Parse(roadmapId));
+            //    var data = await _dbSet.FindAsync(filter);
+            //    var roadmap = data.SingleOrDefault();
+            //    if (roadmap == null || roadmap.MilestoneIds?.Any() != true)
+            //        return roadmap;
+
+            //    var milestoneObjectIds = new List<ObjectId>();
+            //    foreach (var id in roadmap.MilestoneIds)
+            //    {
+            //        if (ObjectId.TryParse(id, out var milestoneObjectId))
+            //        {
+            //            milestoneObjectIds.Add(milestoneObjectId);
+            //        }
+            //    }
+
+            //    // Create filter using FieldDefinition instead of lambda
+            //    var field = new StringFieldDefinition<Milestone, ObjectId>("_id");
+            //    var milestoneFilter = Builders<Milestone>.Filter.In(field, milestoneObjectIds);
+
+            //    var milestones = await _context.GetCollection<Milestone>("Milestone")
+            //        .Find(milestoneFilter)
+            //        .ToListAsync();
+
+            //    roadmap.Milestones = milestones;
+            //    return roadmap;
+            //}
         }
     }
-
 }

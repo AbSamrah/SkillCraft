@@ -12,10 +12,10 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
 {
     public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Entity
     {
-        protected readonly IMongoContext _context;
+        protected readonly IRoadmapDbContext _context;
         protected IMongoCollection<TEntity> _dbSet;
 
-        public BaseRepository(IMongoContext context)
+        public BaseRepository(IRoadmapDbContext context)
         {
             _context = context;
 
@@ -45,7 +45,9 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
 
             var filter = Builders<TEntity>.Filter.Eq("_id", ObjectId.Parse(id));
             var data = await _dbSet.FindAsync(filter);
-            return await data.SingleOrDefaultAsync();
+            var entity = data.SingleOrDefault();
+
+            return entity;
         }
 
         public virtual async Task<List<TEntity>> GetAll()

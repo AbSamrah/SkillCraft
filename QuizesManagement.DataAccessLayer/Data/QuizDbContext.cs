@@ -1,15 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
-using MongoDB.Driver.Core.Clusters;
-using RoadmapMangement.DataAccessLayer.Interfaces;
+﻿using MongoDB.Driver;
+using QuizesManagement.DataAccessLayer.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Driver.Core.Clusters;
 
-namespace RoadmapMangement.DataAccessLayer.Data
+namespace QuizesManagement.DataAccessLayer.Data
 {
-    public class RoadmapDbContext : IRoadmapDbContext
+    public class QuizDbContext : IQuizDbContext
     {
         private IMongoDatabase Database { get; set; }
         public IClientSessionHandle Session { get; private set; }
@@ -18,20 +19,20 @@ namespace RoadmapMangement.DataAccessLayer.Data
         private readonly IConfiguration _configuration;
         private readonly bool _supportsTransactions;
 
-        public RoadmapDbContext(IConfiguration configuration)
+        public QuizDbContext(IConfiguration configuration)
         {
             _configuration = configuration;
             _commands = new List<Func<Task>>();
 
             // This now points to the specific database for roadmaps
             var connectionString = _configuration["MongoSettings:Connection"];
-            var databaseName = _configuration["MongoSettings:Databases:RoadmapDB"];
+            var databaseName = _configuration["MongoSettings:Databases:QuizesDB"];
 
             MongoClient = new MongoClient(connectionString);
             Database = MongoClient.GetDatabase(databaseName);
             // Now using the aliased ClusterType
             _supportsTransactions = MongoClient.Cluster.Description.Type == ClusterType.ReplicaSet;
-        }   
+        }
 
 
         public async Task<int> SaveChanges()
@@ -81,6 +82,20 @@ namespace RoadmapMangement.DataAccessLayer.Data
             var commandTasks = _commands.Select(c => c());
             await Task.WhenAll(commandTasks);
             return _commands.Count;
+        }
+
+        private void ConfigureMongo()
+        {
+            if (MongoClient != null) return;
+
+            var connectionString = _configuration["MongoSettings:Connection"]
+                ?? throw new InvalidOperationException("MongoDB connection string is missing");
+
+            var databaseName = _configuration["MongoSettings:DatabaseName"]
+                ?? throw new InvalidOperationException("MongoDB database name is missing");
+
+            MongoClient = new MongoClient(connectionString);
+            Database = MongoClient.GetDatabase(databaseName);
         }
 
         public IMongoCollection<T> GetCollection<T>(string name)

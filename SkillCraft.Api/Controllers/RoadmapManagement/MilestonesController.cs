@@ -48,7 +48,7 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
             return Ok(milestone);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             var milestone = await _milestonesService.DeleteAsync(id);
@@ -74,13 +74,6 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
             return Ok(milestone);
         }
 
-        //[HttpPut]
-        //[Route("/addstep/{id}")]
-        //public async Task<IActionResult> AddStepAsync(MilestoneStep milestoneStep)
-        //{
-        //    var milestone = await _milestonesService.AddSteps(milestoneStep);
-        //    return Ok(milestone);
-        //}
 
     }
 }
