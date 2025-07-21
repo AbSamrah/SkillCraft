@@ -10,7 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QuizesManagement.DataAccessLayer.Models
 {
-    public abstract class Quiz
+    public class Quiz
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

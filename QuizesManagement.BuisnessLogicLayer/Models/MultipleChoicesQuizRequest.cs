@@ -10,5 +10,6 @@ namespace QuizesManagement.BuisnessLogicLayer.Models
     public class MultipleChoicesQuizRequest: QuizRequest
     {
         public List<string> Options { get; set; }
+        public string Answer { get; set; }
     }
 }

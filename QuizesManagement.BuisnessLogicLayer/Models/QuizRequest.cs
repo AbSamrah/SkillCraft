@@ -7,9 +7,8 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QuizesManagement.BuisnessLogicLayer.Models
 {
-    public abstract class QuizRequest
+    public class QuizRequest
     {
-        public string Id { get; set; }
         
         public string Question { get; set; }
         

@@ -9,16 +9,10 @@ namespace QuizesManagement.BuisnessLogicLayer.Services
 {
     public interface IQuizService
     {
-        public Task<List<QuizDto>> GetAllQuizes();
-
-        public Task<QuizDto> Get(string id);
-
-        public Task<QuizDto> Add(QuizRequest quizRequest);
-
-        public Task<QuizDto> Update(QuizRequest quizRequest);
+        public Task<List<QuizDto>> GetAll();
 
         public Task<QuizDto> Delete(string id);
 
-        public Task<bool> CheckAnswer(QuizDto quiz, IAnswer answer);
+        //public Task<QuizDto> GetById(string id);
     }
 }

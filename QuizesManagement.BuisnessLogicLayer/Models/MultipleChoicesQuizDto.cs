@@ -9,6 +9,8 @@ namespace QuizesManagement.BuisnessLogicLayer.Models
 {
     public class MultipleChoicesQuizDto: QuizDto
     {
-        public List<Option> Options { get; set; }
+        public List<string> Options { get; set; }
+
+        public string Answer {  get; set; }
     }
 }

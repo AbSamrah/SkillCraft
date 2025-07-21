@@ -23,12 +23,14 @@ namespace DataAccessLayer.Auth
 
         public Task<string> GenerateToken(User user)
         {
-            var claims = new List<Claim>();
-
-            claims.Add(new Claim(ClaimTypes.GivenName, user.FirstName));
-            claims.Add(new Claim(ClaimTypes.Surname, user.LastName));
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(ClaimTypes.Role, user.Role.Title));
+            var claims = new List<Claim>
+            {
+                // FIX: Use explicit string names to match the frontend
+                new Claim("given_name", user.FirstName),
+                new Claim("family_name", user.LastName),
+                new Claim("email", user.Email),
+                new Claim("role", user.Role.Title)
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

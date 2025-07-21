@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace QuizesManagement.BuisnessLogicLayer.Models
 {
-    public abstract class IAnswer
+    public class EditMultipleChoicesQuizRequest: MultipleChoicesQuizRequest
     {
-
+        public string Id { get; set; }
     }
 }

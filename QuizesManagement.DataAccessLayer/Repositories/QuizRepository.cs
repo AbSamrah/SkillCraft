@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace QuizesManagement.DataAccessLayer.Repositories
 {
-    public abstract class QuizRepository: IQuizRepository
+    public class QuizRepository: IQuizRepository
     {
         protected readonly IQuizDbContext _context;
         protected IMongoCollection<Quiz> _dbSet;
@@ -22,7 +22,7 @@ namespace QuizesManagement.DataAccessLayer.Repositories
             _dbSet = _context.GetCollection<Quiz>(typeof(Quiz).Name);
         }
 
-        public virtual void Add(Quiz quiz)
+        public virtual async void Add(Quiz quiz)
         {
             if (string.IsNullOrEmpty(quiz.Id))
             {
@@ -50,6 +50,7 @@ namespace QuizesManagement.DataAccessLayer.Repositories
 
             return entity;
         }
+        
 
         public virtual async Task<List<Quiz>> GetAll()
         {
@@ -57,20 +58,7 @@ namespace QuizesManagement.DataAccessLayer.Repositories
             return all.ToList();
         }
 
-        public virtual async Task Update(Quiz quiz)
-        {
-            if (!ObjectId.TryParse(quiz.Id, out var objectId))
-            {
-                throw new ArgumentException("Invalid ID format");
-            }
-
-            _context.AddCommand(async () =>
-            {
-                var filter = Builders<Quiz>.Filter.Eq("_id", objectId);
-                var result = await _dbSet.ReplaceOneAsync(filter, quiz);
-            });
-
-        }
+       
 
         public virtual void Remove(string id)
         {

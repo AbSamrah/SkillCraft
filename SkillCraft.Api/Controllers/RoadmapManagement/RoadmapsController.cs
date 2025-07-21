@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.BuisnessLogicLayer.Services;
 
 namespace SkillCraft.Api.Controllers.RoadmapManagement
 {
+    [Authorize(Roles = "Editor,Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class RoadmapsController : ControllerBase
@@ -17,6 +19,7 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllAsync()
         {
             var roadmaps = await _roadmapsService.GetAll();
@@ -36,6 +39,7 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAsync(string id)
         {
             var roadmap = await _roadmapsService.Get(id);

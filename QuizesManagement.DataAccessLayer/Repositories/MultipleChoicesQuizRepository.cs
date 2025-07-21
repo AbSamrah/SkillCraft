@@ -16,21 +16,36 @@ namespace QuizesManagement.DataAccessLayer.Repositories
         {
         }
 
-        public virtual async Task<MultipleChoicesQuiz> GetById(string id)
+        public async Task<MultipleChoicesQuiz> GetById(string id)
         {
             var quiz = (MultipleChoicesQuiz)(await _dbSet.Find(r => r.Id == id).FirstOrDefaultAsync());
-            if (quiz == null || quiz.OptionsIds?.Any() != true)
-                return quiz;
+            if(quiz is null)
+            {
+                return null;
+            }
 
-            var options = await _context.GetCollection<Option>("Option")
-                .Find(m => quiz.OptionsIds.Contains(m.Id))
-                .ToListAsync();
+            var options = quiz.Options;
 
             Random rand = new Random();
             options = options.OrderBy(x => rand.Next()).ToList();
 
             quiz.Options = options;
             return quiz;
+        }
+
+        public async Task Update(MultipleChoicesQuiz quiz)
+        {
+            if (!ObjectId.TryParse(quiz.Id, out var objectId))
+            {
+                throw new ArgumentException("Invalid ID format");
+            }
+
+            _context.AddCommand(async () =>
+            {
+                var filter = Builders<Quiz>.Filter.Eq("_id", objectId);
+                var result = await _dbSet.ReplaceOneAsync(filter, quiz);
+            });
+
         }
     }
 }

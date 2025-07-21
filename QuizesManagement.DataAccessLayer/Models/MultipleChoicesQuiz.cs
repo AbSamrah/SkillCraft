@@ -10,10 +10,8 @@ namespace QuizesManagement.DataAccessLayer.Models
     public class MultipleChoicesQuiz: Quiz
     {
         [BsonElement("options")]
-        public List<string> OptionsIds { get; set; } = new List<string>();
-        [BsonIgnore]
-        public List<Option> Options { get; set; } = new List<Option>();
-        [BsonElement("Answer")]
-        public string AnswerId { get; set; }
+        public List<string> Options { get; set; } = new List<string>();
+        [BsonElement("answer")]
+        public string Answer { get; set; }
     }
 }
