@@ -2,7 +2,7 @@
 {
     public class AddRoadmapRequest: RoadmapRequest
     {
-        public List<string> MilestonesIds { get; set; } = new List<string>();
+        public List<string> MilestonesIds { get; set; }
         public bool IsActive { get; internal set; }
     }
 }

@@ -19,8 +19,5 @@ namespace RoadmapMangement.DataAccessLayer.Models
 
         [BsonElement("description")]
         public string Description { get; set; }
-
-        [BsonElement("duration")]
-        public DateTime? Duration { get; set; }
     }
 }

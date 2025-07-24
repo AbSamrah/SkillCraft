@@ -35,11 +35,11 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         public async Task<MilestoneDto> Add(AddMilestoneRequest addMilestoneRequest)
         {
             Milestone milestone = _mapper.Map<Milestone>(addMilestoneRequest);
+            /*Console.WriteLine(milestone.StepsIds.Count);
             foreach (string step in addMilestoneRequest.StepsIds)
             {
                 milestone.StepsIds.Add(step);
-            }
-
+            }*/
 
             _milestonesRepository.Add(milestone);
             await _uow.Commit();
@@ -85,7 +85,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
 
             existingMilestone.Name = updateMilestoneRequest.Name;
             existingMilestone.Description = updateMilestoneRequest.Description;
-            existingMilestone.Duration = updateMilestoneRequest.Duration;
             existingMilestone.IsCompleted = updateMilestoneRequest.IsCompleted;
             existingMilestone.StepsIds.Clear();
             foreach (string step in updateMilestoneRequest.StepsIds)

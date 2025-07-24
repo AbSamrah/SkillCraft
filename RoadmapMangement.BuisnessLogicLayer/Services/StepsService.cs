@@ -78,10 +78,10 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             {
                 throw new Exception("Step not found.");
             }
-            existingStep.Duration = updateStepRequest.Duration;
             existingStep.Description = updateStepRequest.Description;
             existingStep.IsCompleted = updateStepRequest.IsCompleted;
             existingStep.Name = updateStepRequest.Name;
+            existingStep.DurationInMinutes = updateStepRequest.DurationInMinutes;
 
             await _stepsRepository.Update(existingStep);
             await _uow.Commit();

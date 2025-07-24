@@ -16,8 +16,8 @@ namespace RoadmapMangement.DataAccessLayer.Models
         public List<string> Tags { get; set; } = new List<string>();
 
         // Reference milestones by ID (better for large collections)
-        [BsonElement("milestoneIds")]
-        public List<string> MilestoneIds { get; set; } = new List<string>();
+        [BsonElement("milestones")]
+        public List<string> MilestonesIds { get; set; } = new List<string>();
 
         // Ignored property to be populated when needed
         [BsonIgnore]
@@ -28,5 +28,8 @@ namespace RoadmapMangement.DataAccessLayer.Models
 
         [BsonElement("isActive")]
         public bool IsActive { get; set; } = true;
+
+        [BsonIgnore]
+        public int DurationInMinutes { get; set; }
     }
 }

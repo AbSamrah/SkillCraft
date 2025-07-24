@@ -26,58 +26,49 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
 
         public override async Task<Roadmap> GetById(string roadmapId)
         {
-
             var roadmap = await _dbSet.Find(r => r.Id == roadmapId).FirstOrDefaultAsync();
-            if (roadmap == null || roadmap.MilestoneIds?.Any() != true)
+            if (roadmap == null || roadmap.MilestonesIds?.Any() != true)
                 return roadmap;
 
             var unorderedMilestones = await _context.GetCollection<Milestone>("Milestone")
-                .Find(m => roadmap.MilestoneIds.Contains(m.Id))
+                .Find(m => roadmap.MilestonesIds.Contains(m.Id))
                 .ToListAsync();
 
-            // Reorder the milestones to match the order in the MilestoneIds list
             var milestoneDict = unorderedMilestones.ToDictionary(m => m.Id);
-            var orderedMilestones = roadmap.MilestoneIds
+            var orderedMilestones = roadmap.MilestonesIds
                                           .Where(id => milestoneDict.ContainsKey(id))
                                           .Select(id => milestoneDict[id])
                                           .ToList();
 
+            var allStepIds = orderedMilestones.SelectMany(m => m.StepsIds ?? new List<string>()).Distinct().ToList();
+
+            if (allStepIds.Any())
+            {
+                var allSteps = await _context.GetCollection<Step>("Step")
+                    .Find(s => allStepIds.Contains(s.Id))
+                    .ToListAsync();
+                var stepDict = allSteps.ToDictionary(s => s.Id);
+
+                foreach (var milestone in orderedMilestones)
+                {
+                    if (milestone.StepsIds != null)
+                    {
+                        milestone.Steps = milestone.StepsIds
+                                                   .Where(id => stepDict.ContainsKey(id))
+                                                   .Select(id => stepDict[id])
+                                                   .ToList();
+                        
+                        // Calculate duration for this milestone
+                        milestone.DurationInMinutes = milestone.Steps.Sum(s => s.DurationInMinutes);
+                    }
+                }
+            }
+            
             roadmap.Milestones = orderedMilestones;
+            // Calculate total duration for the roadmap
+            roadmap.DurationInMinutes = roadmap.Milestones.Sum(m => m.DurationInMinutes);
+
             return roadmap;
-
-            //    if (!ObjectId.TryParse(roadmapId, out var objectId))
-            //    {
-            //        return null;
-            //    }
-
-            //    //var roadmap = await _dbSet.Find(r => r.Id == roadmapId).FirstOrDefaultAsync();
-
-            //    var filter = Builders<Roadmap>.Filter.Eq("_id", ObjectId.Parse(roadmapId));
-            //    var data = await _dbSet.FindAsync(filter);
-            //    var roadmap = data.SingleOrDefault();
-            //    if (roadmap == null || roadmap.MilestoneIds?.Any() != true)
-            //        return roadmap;
-
-            //    var milestoneObjectIds = new List<ObjectId>();
-            //    foreach (var id in roadmap.MilestoneIds)
-            //    {
-            //        if (ObjectId.TryParse(id, out var milestoneObjectId))
-            //        {
-            //            milestoneObjectIds.Add(milestoneObjectId);
-            //        }
-            //    }
-
-            //    // Create filter using FieldDefinition instead of lambda
-            //    var field = new StringFieldDefinition<Milestone, ObjectId>("_id");
-            //    var milestoneFilter = Builders<Milestone>.Filter.In(field, milestoneObjectIds);
-
-            //    var milestones = await _context.GetCollection<Milestone>("Milestone")
-            //        .Find(milestoneFilter)
-            //        .ToListAsync();
-
-            //    roadmap.Milestones = milestones;
-            //    return roadmap;
-            //}
         }
     }
 }

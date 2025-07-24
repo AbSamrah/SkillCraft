@@ -35,10 +35,10 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         public async Task<RoadmapDto> Add(AddRoadmapRequest addRoadmapRequest)
         {
             Roadmap roadmap = _mapper.Map<Roadmap>(addRoadmapRequest);
-            foreach (string milestone in addRoadmapRequest.MilestonesIds)
+            /*foreach (string milestone in addRoadmapRequest.MilestonesIds)
             {
                 roadmap.MilestoneIds.Add(milestone);
-            }
+            }*/
             _roadmapsRepository.Add(roadmap);
             await _uow.Commit();
             RoadmapDto roadmapDto = _mapper.Map<RoadmapDto>(roadmap);
@@ -84,17 +84,16 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             {
                 throw new Exception("Roadmap not found.");
             }
-            existingRoadmap.Duration = updateRoadmapRequest.Duration;
             existingRoadmap.Salary = updateRoadmapRequest.Salary;
             existingRoadmap.Tags = updateRoadmapRequest.Tags;
             existingRoadmap.Description = updateRoadmapRequest.Description;
             existingRoadmap.IsActive = updateRoadmapRequest.IsActive;
             existingRoadmap.Name = updateRoadmapRequest.Name;
-            existingRoadmap.MilestoneIds.Clear();
+            existingRoadmap.MilestonesIds.Clear();
             
             foreach (string milestone in updateRoadmapRequest.MilestonesIds)
             {
-                existingRoadmap.MilestoneIds.Add(milestone);
+                existingRoadmap.MilestonesIds.Add(milestone);
             }
 
             await _roadmapsRepository.Update(existingRoadmap);

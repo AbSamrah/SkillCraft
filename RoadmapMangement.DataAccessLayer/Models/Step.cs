@@ -12,5 +12,8 @@ namespace RoadmapMangement.DataAccessLayer.Models
     {
         [BsonElement("isCompleted")]
         public bool IsCompleted { get; set; }
+
+        [BsonElement("durationInMinutes")]
+        public int DurationInMinutes { get; set; }
     }
 }

@@ -6,5 +6,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Models
     {
         public string Id { get; set; }
         public List<MilestoneDto> Milestones { get; set; }
+        public int DurationInMinutes { get; set; }
     }
 }

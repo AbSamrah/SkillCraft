@@ -10,6 +10,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Models
     {
         public string Id { get; set; }
         public List<StepDto> Steps { get; set; }
-        // other properties
+        public int DurationInMinutes { get; set; }
     }
 }
