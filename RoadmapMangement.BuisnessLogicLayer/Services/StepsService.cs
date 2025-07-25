@@ -15,12 +15,14 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
     public class StepsService
     {
         private readonly IRepository<Step> _stepsRepository;
+        private readonly IMilestoneRepository _milestoneRepository;
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
 
-        public StepsService(IRepository<Step> stepsRepository, IUnitOfWork uow, IMapper mapper)
+        public StepsService(IRepository<Step> stepsRepository, IMilestoneRepository milestoneRepository, IUnitOfWork uow, IMapper mapper)
         {
             _stepsRepository = stepsRepository;
+            _milestoneRepository = milestoneRepository;
             _uow = uow;
             _mapper = mapper;
         }
@@ -57,14 +59,22 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         public async Task<StepDto> DeleteAsync(string id)
         {
             var step = await _stepsRepository.GetById(id);
-
             if (step is null)
             {
-                throw new Exception("Step not found.");
+                throw new System.Exception("Step not found.");
             }
 
-
             _stepsRepository.Remove(step.Id);
+
+            var milestonesToUpdate = (await _milestoneRepository.GetAll())
+                .Where(m => m.StepsIds.Contains(id));
+
+            foreach (var milestone in milestonesToUpdate)
+            {
+                milestone.StepsIds.Remove(id);
+                await _milestoneRepository.Update(milestone);
+            }
+
             await _uow.Commit();
             StepDto stepDto = _mapper.Map<StepDto>(step);
             return stepDto;
@@ -79,7 +89,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
                 throw new Exception("Step not found.");
             }
             existingStep.Description = updateStepRequest.Description;
-            existingStep.IsCompleted = updateStepRequest.IsCompleted;
             existingStep.Name = updateStepRequest.Name;
             existingStep.DurationInMinutes = updateStepRequest.DurationInMinutes;
 

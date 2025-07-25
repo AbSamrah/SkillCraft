@@ -32,17 +32,17 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
             {
                 return BadRequest();
             }
-            return Ok(step);
+            return CreatedAtRoute("GetStepAsync", new { id = step.Id }, step);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetStepAsync")]
         public async Task<IActionResult> GetAsync(string id)
         {
             var step = await _stepsService.Get(id);
 
             if (step is null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok(step);
@@ -55,7 +55,7 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
 
             if (step is null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return Ok(step);
         }
@@ -67,7 +67,7 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
 
             if (step is null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok(step);

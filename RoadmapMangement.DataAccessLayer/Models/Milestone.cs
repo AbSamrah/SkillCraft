@@ -16,9 +16,6 @@ namespace RoadmapMangement.DataAccessLayer.Models
         [BsonIgnore]
         public List<Step> Steps { get; set; } = new List<Step>();
 
-        [BsonElement("isCompleted")]
-        public bool IsCompleted { get; set; }
-
         [BsonIgnore]
         public int DurationInMinutes { get; set; }
     }

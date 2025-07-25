@@ -12,7 +12,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public bool IsCompleted { get; set; }
         public int DurationInMinutes { get; set; }
     }
 }

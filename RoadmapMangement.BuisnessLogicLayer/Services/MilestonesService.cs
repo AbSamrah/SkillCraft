@@ -14,13 +14,15 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
     public class MilestonesService
     {
         private readonly IMilestoneRepository _milestonesRepository;
+        private readonly IRoadmapRepository _roadmapRepository;
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
         private readonly IRepository<Step> _stepsRepository;
 
-        public MilestonesService(IMilestoneRepository milestonesRepository, IUnitOfWork uow, IMapper mapper, IRepository<Step> stepsRepository)
+        public MilestonesService(IMilestoneRepository milestonesRepository, IRoadmapRepository roadmapRepository,IUnitOfWork uow, IMapper mapper, IRepository<Step> stepsRepository)
         {
             _milestonesRepository = milestonesRepository;
+            _roadmapRepository = roadmapRepository;
             _uow = uow;
             _mapper = mapper;
             _stepsRepository = stepsRepository;
@@ -35,11 +37,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         public async Task<MilestoneDto> Add(AddMilestoneRequest addMilestoneRequest)
         {
             Milestone milestone = _mapper.Map<Milestone>(addMilestoneRequest);
-            /*Console.WriteLine(milestone.StepsIds.Count);
-            foreach (string step in addMilestoneRequest.StepsIds)
-            {
-                milestone.StepsIds.Add(step);
-            }*/
 
             _milestonesRepository.Add(milestone);
             await _uow.Commit();
@@ -61,16 +58,27 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         public async Task<MilestoneDto> DeleteAsync(string id)
         {
             var milestone = await _milestonesRepository.GetById(id);
-
             if (milestone is null)
             {
-                throw new Exception("Milestone not found.");
+                throw new System.Exception("Milestone not found.");
             }
 
-            MilestoneDto milestoneDto = _mapper.Map<MilestoneDto>(milestone);
-
+            // Remove the milestone itself
             _milestonesRepository.Remove(milestone.Id);
+
+            // Find all roadmaps that contain this milestone and remove the reference
+            var roadmapsToUpdate = (await _roadmapRepository.GetAll())
+                .Where(r => r.MilestonesIds.Contains(id));
+
+            foreach (var roadmap in roadmapsToUpdate)
+            {
+                roadmap.MilestonesIds.Remove(id);
+                await _roadmapRepository.Update(roadmap);
+            }
+
             await _uow.Commit();
+
+            MilestoneDto milestoneDto = _mapper.Map<MilestoneDto>(milestone);
             return milestoneDto;
         }
 
@@ -85,7 +93,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
 
             existingMilestone.Name = updateMilestoneRequest.Name;
             existingMilestone.Description = updateMilestoneRequest.Description;
-            existingMilestone.IsCompleted = updateMilestoneRequest.IsCompleted;
             existingMilestone.StepsIds.Clear();
             foreach (string step in updateMilestoneRequest.StepsIds)
             {

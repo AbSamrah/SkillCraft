@@ -6,7 +6,7 @@ using RoadmapMangement.BuisnessLogicLayer.Services;
 
 namespace SkillCraft.Api.Controllers.RoadmapManagement
 {
-    [Authorize(Roles = "Editor,Admin")]
+    //[Authorize(Roles = "Editor,Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class RoadmapsController : ControllerBase
@@ -35,10 +35,10 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
             {
                 return BadRequest();
             }
-            return Ok(roadmap);
+            return CreatedAtRoute("GetRoadmapAsync", new { id = roadmap.Id}, roadmap);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetRoadmapAsync")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAsync(string id)
         {

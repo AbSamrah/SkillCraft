@@ -10,8 +10,6 @@ namespace RoadmapMangement.DataAccessLayer.Models
 {
     public class Step : Entity
     {
-        [BsonElement("isCompleted")]
-        public bool IsCompleted { get; set; }
 
         [BsonElement("durationInMinutes")]
         public int DurationInMinutes { get; set; }
