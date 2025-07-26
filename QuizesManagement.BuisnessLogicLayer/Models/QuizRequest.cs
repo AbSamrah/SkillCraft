@@ -13,7 +13,5 @@ namespace QuizesManagement.BuisnessLogicLayer.Models
         public string Question { get; set; }
         
         public string Tag { get; set; }
-        
-        public bool IsCompleted { get; set; }
     }
 }

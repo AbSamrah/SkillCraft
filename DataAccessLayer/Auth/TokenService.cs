@@ -26,6 +26,7 @@ namespace DataAccessLayer.Auth
             var claims = new List<Claim>
             {
                 // FIX: Use explicit string names to match the frontend
+                new Claim("id", user.Id.ToString()),
                 new Claim("given_name", user.FirstName),
                 new Claim("family_name", user.LastName),
                 new Claim("email", user.Email),

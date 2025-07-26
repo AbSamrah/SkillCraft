@@ -36,7 +36,7 @@ namespace BuissnessLogicLayer.Services
                 throw new Exception("Email already exists.");
             }
 
-            User user = new DataAccessLayer.Models.User();
+            User user = new User();
 
             user.FirstName = userSignUp.FirstName;
             user.LastName = userSignUp.LastName;

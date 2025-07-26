@@ -46,9 +46,6 @@ namespace DataAccessLayer.Repositories
         {
             var query = _usersDbContext.Users.OrderBy(u => u.FirstName)
                 .ThenBy(u => u.LastName)
-                .Skip((pageNumber)* pageSize)
-                .Take(pageSize)
-                .Include(u => u.Role)
                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(email))
             {
@@ -62,6 +59,11 @@ namespace DataAccessLayer.Repositories
             {
                 query = query.Where(u => u.LastName.Contains(lastName));
             }
+
+            query = query
+                .Skip((pageNumber) * pageSize)
+                .Take(pageSize)
+                .Include(u => u.Role);
 
             return await query.ToListAsync();
         }

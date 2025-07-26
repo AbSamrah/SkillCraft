@@ -7,14 +7,8 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QuizesManagement.BuisnessLogicLayer.Models
 {
-    public class QuizDto
+    public class QuizDto: QuizRequest
     {
         public string Id { get; set; }
-        
-        public string Question { get; set; }
-        
-        public string Tag { get; set; }
-        
-        public bool IsCompleted { get; set; }
     }
 }

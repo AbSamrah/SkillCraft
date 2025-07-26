@@ -10,6 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QuizesManagement.DataAccessLayer.Models
 {
+    [BsonKnownTypes(typeof(MultipleChoicesQuiz))]
     public class Quiz
     {
         [BsonId]
@@ -19,7 +20,5 @@ namespace QuizesManagement.DataAccessLayer.Models
         public string Question {  get; set; }
         [BsonElement("tag")]
         public string Tag {  get; set; }
-        [BsonElement("isCompleted")]
-        public bool IsCompleted { get; set; }
     }
 }
