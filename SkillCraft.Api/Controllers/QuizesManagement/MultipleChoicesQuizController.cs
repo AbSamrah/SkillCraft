@@ -78,10 +78,10 @@ namespace Api.Controllers
             return Ok(quiz);
         }
 
-        [HttpPut]
+        [HttpGet]
         [Route("/answer/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> CheckAnswer([FromRoute] string id, [FromBody] string answer)
+        public async Task<IActionResult> CheckAnswer([FromRoute] string id, [FromQuery] string answer)
         {
             var result = await _quizService.CheckAnswer(id, answer);
             return Ok(result);

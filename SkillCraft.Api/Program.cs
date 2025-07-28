@@ -20,6 +20,11 @@ using RoadmapMangement.DataAccessLayer.Repositories;
 using System.Text;
 using UsersManagement.BuissnessLogicLayer.Services;
 using SkillCraft.Api.Middleware;
+using ProfilesManagement.DataAccessLayer.Interfaces;
+using ProfilesManagement.DataAccessLayer.Data;
+using ProfilesManagement.DataAccessLayer.Repositories;
+using ProfilesManagement.BuisnessLogicLayer.Services;
+using ProfilesManagement.BuisnessLogicLayer.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +46,7 @@ builder.Services.AddDbContext<UsersDbContext>(options =>
 });
 builder.Services.AddScoped<IRoadmapDbContext, RoadmapDbContext>();
 builder.Services.AddScoped<IQuizDbContext, QuizDbContext>();
-
+builder.Services.AddScoped<IProfileDbContext, ProfileDbContext>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -70,7 +75,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IMultipleChoicesQuizRepository, MultipleChoicesQuizRepository>();
-
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<UsersService>();
@@ -78,10 +83,10 @@ builder.Services.AddScoped<RolesService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StepsService>();
 builder.Services.AddScoped<MilestonesService>();
-builder.Services.AddScoped<RoadmapsService>();
+builder.Services.AddScoped<IRoadmapsService, RoadmapsService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IMultipleChoisesQuizService, MultipleChoisesQuizService>();
-
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddScoped<RoadmapMangement.DataAccessLayer.Interfaces.IUnitOfWork, RoadmapMangement.DataAccessLayer.Uow.UnitOfWork>();
 builder.Services.AddScoped<QuizesManagement.DataAccessLayer.Interfaces.IUnitOfWork, QuizesManagement.DataAccessLayer.Uow.UnitOfWork>();
@@ -89,6 +94,7 @@ builder.Services.AddScoped<QuizesManagement.DataAccessLayer.Interfaces.IUnitOfWo
 builder.Services.AddAutoMapper(typeof(UsersProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(StepsProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(QuizesProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(ProfilesProfile).Assembly);
 
 builder.Services.AddCors(options =>
 {

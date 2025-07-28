@@ -14,7 +14,7 @@ namespace DataAccessLayer.Repositories
         public Task<User> GetByEmailAsync(string email);
         public Task<User> UpdateAsync(User user);
         public Task<User> DeleteAsync(Guid id);
-        public Task<User> AddAsync(User user);
+        public Task AddAsync(User user);
 
         public Task<bool> UserExistsAsync(String Email);
     }

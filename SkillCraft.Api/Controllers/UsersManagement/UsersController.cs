@@ -4,6 +4,7 @@ using BuissnessLogicLayer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using ProfilesManagement.BuisnessLogicLayer.Services;
 
 namespace API.Controllers
 {
@@ -14,10 +15,12 @@ namespace API.Controllers
     public class UsersController : Controller
     {
         private readonly UsersService _usersService;
+        private readonly IProfileService _profileService;
 
-        public UsersController(UsersService usersService)
+        public UsersController(UsersService usersService, IProfileService profileService)
         {
             _usersService = usersService;
+            _profileService = profileService;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] UserFilter userFilter)
@@ -32,7 +35,7 @@ namespace API.Controllers
             var user = await _usersService.GetByIdAsync(id);
             if (user is null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return Ok(user);
         }
@@ -43,7 +46,7 @@ namespace API.Controllers
             var user = await _usersService.GetByEmailAsync(email);
             if (user is null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return Ok(user);
         }
@@ -52,9 +55,13 @@ namespace API.Controllers
         public async Task<IActionResult> Add(AddUserRequest user)
         {   
             user = await _usersService.AddAsync(user);
+            if(user.Role == "User")
+            {
+                await _profileService.Add(user.Id.ToString());
+            }
             if (user is null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
         }
@@ -65,8 +72,9 @@ namespace API.Controllers
             var user = await _usersService.DeleteAsync(id);
             if (user is null)
             {
-                return BadRequest();
+                return NotFound();
             }
+            await _profileService.Remove(id.ToString());
             return Ok(user);
         }
 
@@ -76,7 +84,7 @@ namespace API.Controllers
             updateUserRequest = await _usersService.UpdateAsync(updateUserRequest);
             if (updateUserRequest is null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return Ok(updateUserRequest);
         }

@@ -20,13 +20,12 @@ namespace DataAccessLayer.Repositories
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<User> AddAsync(User user) 
+        public async Task AddAsync(User user) 
         {
             user.Id = Guid.NewGuid();
             await _usersDbContext.AddAsync(user);
             await _usersDbContext.SaveChangesAsync();
             user.PasswordHash = null;
-            return user;
         }
 
         public async Task<User> DeleteAsync(Guid id)

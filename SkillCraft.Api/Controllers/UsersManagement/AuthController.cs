@@ -1,7 +1,9 @@
 ﻿using BuissnessLogicLayer.Models;
 using BuissnessLogicLayer.Services;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using ProfilesManagement.BuisnessLogicLayer.Services;
 
 namespace API.Controllers
 {
@@ -11,10 +13,14 @@ namespace API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
+        private readonly ITokenService _tokenService;
+        private readonly IProfileService _profileService;
 
-        public AuthController(AuthService authService)
+        public AuthController(AuthService authService, ITokenService tokenService, IProfileService profileService)
         {
             _authService = authService;
+            _tokenService = tokenService;
+            _profileService = profileService;
         }
 
         [HttpPost]
@@ -23,7 +29,11 @@ namespace API.Controllers
         {
             try
             {
-                var token = await _authService.SignUpAsync(userSignUp);
+                var user = await _authService.SignUpAsync(userSignUp);
+                await _profileService.Add(user.Id.ToString());
+
+                var token = await _tokenService.GenerateToken(user);
+
                 return Ok(token);
             }
             catch (Exception ex) when (ex.Message == "Email already exists.")
@@ -43,7 +53,8 @@ namespace API.Controllers
         {
             try
             {
-                var token = await _authService.LoginAsync(userLogin);
+                var user = await _authService.LoginAsync(userLogin);
+                var token = await _tokenService.GenerateToken(user);
                 return Ok(token);
             }
             catch (Exception ex) when (ex.Message == "Password is incorrect.")

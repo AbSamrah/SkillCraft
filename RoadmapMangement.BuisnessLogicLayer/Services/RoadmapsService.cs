@@ -11,17 +11,15 @@ using System.Threading.Tasks;
 
 namespace RoadmapMangement.BuisnessLogicLayer.Services
 {
-    public class RoadmapsService
+    public class RoadmapsService: IRoadmapsService
     {
         private readonly IRoadmapRepository _roadmapsRepository;
-        //private readonly IRepository<Milestone> _milestoneRepository;
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
 
-        public RoadmapsService(IRoadmapRepository roadmapsRepository, IUnitOfWork uow, IMapper mapper/*, IRepository<Milestone> milestoneRepository*/)
+        public RoadmapsService(IRoadmapRepository roadmapsRepository, IUnitOfWork uow, IMapper mapper)
         {
             _roadmapsRepository = roadmapsRepository;
-            //_milestoneRepository = milestoneRepository;
             _uow = uow;
             _mapper = mapper;
         }
@@ -35,10 +33,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         public async Task<RoadmapDto> Add(AddRoadmapRequest addRoadmapRequest)
         {
             Roadmap roadmap = _mapper.Map<Roadmap>(addRoadmapRequest);
-            /*foreach (string milestone in addRoadmapRequest.MilestonesIds)
-            {
-                roadmap.MilestoneIds.Add(milestone);
-            }*/
             _roadmapsRepository.Add(roadmap);
             await _uow.Commit();
             RoadmapDto roadmapDto = _mapper.Map<RoadmapDto>(roadmap);
@@ -51,11 +45,9 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             var roadmap = await _roadmapsRepository.GetById(id);
             if (roadmap is null)
             {
-                throw new Exception("Roadmap not found.");
+                throw new KeyNotFoundException("Roadmap not found.");
             }
-
             RoadmapDto roadmapDto = _mapper.Map<RoadmapDto>(roadmap);
-
             return roadmapDto;
         }
 

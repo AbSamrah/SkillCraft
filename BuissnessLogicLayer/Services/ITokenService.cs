@@ -1,14 +1,14 @@
-﻿using DataAccessLayer.Models;
+﻿using BuissnessLogicLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccessLayer.Auth
+namespace BuissnessLogicLayer.Services
 {
     public interface ITokenService
     {
-        public Task<string> GenerateToken(User user);
+        public Task<string> GenerateToken(UserDto user);
     }
 }

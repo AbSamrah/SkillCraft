@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuissnessLogicLayer\UsersManagement.BuissnessLogicLayer.csproj" />
+    <ProjectReference Include="..\ProfilesManagement.BuisnessLogicLayer\ProfilesManagement.BuisnessLogicLayer.csproj" />
+    <ProjectReference Include="..\ProfilesManagement.DataAccessLayer\ProfilesManagement.DataAccessLayer.csproj" />
     <ProjectReference Include="..\QuizesManagement.BuisnessLogicLayer\QuizesManagement.BuisnessLogicLayer.csproj" />
     <ProjectReference Include="..\RoadmapMangement.BuisnessLogicLayer\RoadmapMangement.BuisnessLogicLayer.csproj" />
   </ItemGroup>

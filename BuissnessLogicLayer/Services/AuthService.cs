@@ -15,21 +15,18 @@ namespace BuissnessLogicLayer.Services
     {
         private IUserRepository _userRepository;
         private IPasswordHasher _passwordHasher;
-        private ITokenService _tokenService;
         private IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
 
-        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher,
-            ITokenService tokenService, IRoleRepository roleRepository, IMapper mapper)
+        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher, IRoleRepository roleRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
-            _tokenService = tokenService;
             _roleRepository = roleRepository;
             _mapper = mapper;
         }
 
-        public async Task<string> SignUpAsync(UserSignUp userSignUp)
+        public async Task<UserDto> SignUpAsync(UserSignUp userSignUp)
         {
             if(await _userRepository.UserExistsAsync(userSignUp.Email))
             {
@@ -49,12 +46,10 @@ namespace BuissnessLogicLayer.Services
 
             await _userRepository.AddAsync(user);
 
-            var token = await _tokenService.GenerateToken(user);
-
-            return token;
+            return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<string> LoginAsync(UserLogin userLogin)
+        public async Task<UserDto> LoginAsync(UserLogin userLogin)
         {
             if (!await _userRepository.UserExistsAsync(userLogin.Email))
             {
@@ -64,8 +59,7 @@ namespace BuissnessLogicLayer.Services
             User user = await _userRepository.GetByEmailAsync(userLogin.Email);
             if (_passwordHasher.Verify(userLogin.Password, user.PasswordHash))
             {
-                var token = await _tokenService.GenerateToken(user);
-                return token;
+                return _mapper.Map<UserDto>(user);
             }
             else
             {

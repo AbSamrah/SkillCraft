@@ -11,9 +11,9 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
     [ApiController]
     public class RoadmapsController : ControllerBase
     {
-        private readonly RoadmapsService _roadmapsService;
+        private readonly IRoadmapsService _roadmapsService;
 
-        public RoadmapsController(RoadmapsService roadmapsService)
+        public RoadmapsController(IRoadmapsService roadmapsService)
         {
             _roadmapsService = roadmapsService;
         }
@@ -42,14 +42,15 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
         [AllowAnonymous]
         public async Task<IActionResult> GetAsync(string id)
         {
-            var roadmap = await _roadmapsService.Get(id);
-
-            if (roadmap is null)
+            try
             {
-                return BadRequest();
+                var roadmap = await _roadmapsService.Get(id);
+                return Ok(roadmap);
             }
-
-            return Ok(roadmap);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]

@@ -8,9 +8,8 @@ namespace RoadmapMangement.BuisnessLogicLayer.Filters
 {
     public class RoadmapFilter
     {
-        //public DateTime? Duration { get; set; }
-        public string Name { get; set; }
-        public List<string> Tags { get; set; } = new List<string>();
+        public string? Name { get; set; }
+        public List<string>? Tags { get; set; }
         public decimal MaxSalary { get; set; } = decimal.MaxValue;
         public decimal MinSalary { get; set; } = 0;
         public bool IsActive { get; set; } = false;
