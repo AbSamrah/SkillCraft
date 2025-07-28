@@ -8,7 +8,7 @@ using ProfilesManagement.BuisnessLogicLayer.Services;
 
 namespace API.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     [EnableCors("AllowReactApp")]

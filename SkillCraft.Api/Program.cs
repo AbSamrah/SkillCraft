@@ -4,9 +4,13 @@ using DataAccessLayer.Auth;
 using DataAccessLayer.Data;
 using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ProfilesManagement.BuisnessLogicLayer.Profiles;
+using ProfilesManagement.BuisnessLogicLayer.Services;
+using ProfilesManagement.DataAccessLayer.Data;
+using ProfilesManagement.DataAccessLayer.Interfaces;
+using ProfilesManagement.DataAccessLayer.Repositories;
 using QuizesManagement.BuisnessLogicLayer.Profiles;
 using QuizesManagement.BuisnessLogicLayer.Services;
 using QuizesManagement.DataAccessLayer.Data;
@@ -17,14 +21,11 @@ using RoadmapMangement.BuisnessLogicLayer.Services;
 using RoadmapMangement.DataAccessLayer.Data;
 using RoadmapMangement.DataAccessLayer.Interfaces;
 using RoadmapMangement.DataAccessLayer.Repositories;
+using SkillCraft.Api.Middleware;
+using System;
+using System.Collections.Generic;
 using System.Text;
 using UsersManagement.BuissnessLogicLayer.Services;
-using SkillCraft.Api.Middleware;
-using ProfilesManagement.DataAccessLayer.Interfaces;
-using ProfilesManagement.DataAccessLayer.Data;
-using ProfilesManagement.DataAccessLayer.Repositories;
-using ProfilesManagement.BuisnessLogicLayer.Services;
-using ProfilesManagement.BuisnessLogicLayer.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +38,7 @@ builder.Services.AddControllers()
                     serializerOptions.IgnoreReadOnlyProperties = false;
                     serializerOptions.WriteIndented = true;
                 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<UsersDbContext>(options =>
@@ -66,8 +67,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+// Register HttpClient for DI
+builder.Services.AddHttpClient();
 
+// Business Services & Repositories
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IRoadmapRepository, RoadmapRepository>();
@@ -88,9 +92,29 @@ builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IMultipleChoisesQuizService, MultipleChoisesQuizService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 
+// Register Roadmap Creation Strategies
+builder.Services.AddScoped<ManualRoadmapCreationStrategy>();
+builder.Services.AddScoped<AiRoadmapCreationStrategy>();
+
+// Register the factory delegate to resolve strategies by key
+builder.Services.AddTransient<Func<string, IRoadmapCreationStrategy>>(serviceProvider => key =>
+{
+    switch (key.ToLowerInvariant())
+    {
+        case "manual":
+            return serviceProvider.GetRequiredService<ManualRoadmapCreationStrategy>();
+        case "ai":
+            return serviceProvider.GetRequiredService<AiRoadmapCreationStrategy>();
+        default:
+            throw new KeyNotFoundException($"Strategy '{key}' not found.");
+    }
+});
+
+// Units of Work
 builder.Services.AddScoped<RoadmapMangement.DataAccessLayer.Interfaces.IUnitOfWork, RoadmapMangement.DataAccessLayer.Uow.UnitOfWork>();
 builder.Services.AddScoped<QuizesManagement.DataAccessLayer.Interfaces.IUnitOfWork, QuizesManagement.DataAccessLayer.Uow.UnitOfWork>();
 
+// AutoMapper Profiles
 builder.Services.AddAutoMapper(typeof(UsersProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(StepsProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(QuizesProfile).Assembly);
@@ -117,17 +141,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
-
 app.UseRouting();
-
 app.UseCors("AllowReactApp");
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

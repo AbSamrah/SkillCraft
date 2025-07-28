@@ -2,16 +2,16 @@
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.DataAccessLayer.Interfaces;
 using RoadmapMangement.DataAccessLayer.Models;
-using RoadmapMangement.DataAccessLayer.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RoadmapMangement.BuisnessLogicLayer.Services
 {
-    public class RoadmapsService: IRoadmapsService
+    /// <summary>
+    /// Service for managing roadmap operations.
+    /// </summary>
+    public class RoadmapsService : IRoadmapsService
     {
         private readonly IRoadmapRepository _roadmapsRepository;
         private readonly IUnitOfWork _uow;
@@ -24,19 +24,29 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             _mapper = mapper;
         }
 
-        public async Task<List<RoadmapDto>> GetAll()
+        /// <summary>
+        /// Adds a new roadmap by delegating its creation to the provided strategy.
+        /// </summary>
+        public async Task<RoadmapDto> Add(IRoadmapCreationStrategy strategy, object parameters)
         {
-            var roadmaps = await _roadmapsRepository.GetAll();
-            return _mapper.Map<List<RoadmapDto>>(roadmaps);
-        }
-
-        public async Task<RoadmapDto> Add(AddRoadmapRequest addRoadmapRequest)
-        {
-            Roadmap roadmap = _mapper.Map<Roadmap>(addRoadmapRequest);
+            var roadmap = await strategy.CreateRoadmap(parameters);
             _roadmapsRepository.Add(roadmap);
             await _uow.Commit();
-            RoadmapDto roadmapDto = _mapper.Map<RoadmapDto>(roadmap);
+            return _mapper.Map<RoadmapDto>(roadmap);
+        }
 
+        public async Task<RoadmapDto> DeleteAsync(string id)
+        {
+            var roadmap = await _roadmapsRepository.GetById(id);
+
+            if (roadmap is null)
+            {
+                throw new KeyNotFoundException("Roadmap not found.");
+            }
+
+            var roadmapDto = _mapper.Map<RoadmapDto>(roadmap);
+            _roadmapsRepository.Remove(roadmap.Id);
+            await _uow.Commit();
             return roadmapDto;
         }
 
@@ -47,56 +57,32 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             {
                 throw new KeyNotFoundException("Roadmap not found.");
             }
-            RoadmapDto roadmapDto = _mapper.Map<RoadmapDto>(roadmap);
+            var roadmapDto = _mapper.Map<RoadmapDto>(roadmap);
             return roadmapDto;
         }
 
-
-        public async Task<RoadmapDto> DeleteAsync(string id)
+        public async Task<List<RoadmapDto>> GetAll()
         {
-            var roadmap = await _roadmapsRepository.GetById(id);
-
-            if (roadmap is null)
-            {
-                throw new Exception("Roadmap not found.");
-            }
-
-            RoadmapDto roadmapDto = _mapper.Map<RoadmapDto>(roadmap);
-
-            _roadmapsRepository.Remove(roadmap.Id);
-            await _uow.Commit();
-            return roadmapDto;
+            var roadmaps = await _roadmapsRepository.GetAll();
+            return _mapper.Map<List<RoadmapDto>>(roadmaps);
         }
 
-        public async Task<RoadmapDto> UpdateAsync(string id,UpdateRoadmapRequest updateRoadmapRequest)
+        public async Task<RoadmapDto> UpdateAsync(string id, UpdateRoadmapRequest updateRoadmapRequest)
         {
             var existingRoadmap = await _roadmapsRepository.GetById(id);
 
             if (existingRoadmap is null)
             {
-                throw new Exception("Roadmap not found.");
+                throw new KeyNotFoundException("Roadmap not found.");
             }
-            existingRoadmap.Salary = updateRoadmapRequest.Salary;
-            existingRoadmap.Tags = updateRoadmapRequest.Tags;
-            existingRoadmap.Description = updateRoadmapRequest.Description;
-            existingRoadmap.IsActive = updateRoadmapRequest.IsActive;
-            existingRoadmap.Name = updateRoadmapRequest.Name;
-            existingRoadmap.MilestonesIds.Clear();
-            
-            foreach (string milestone in updateRoadmapRequest.MilestonesIds)
-            {
-                existingRoadmap.MilestonesIds.Add(milestone);
-            }
+
+            // Use AutoMapper to update the existing entity from the request object
+            _mapper.Map(updateRoadmapRequest, existingRoadmap);
 
             await _roadmapsRepository.Update(existingRoadmap);
             await _uow.Commit();
 
-            RoadmapDto roadmapDto = _mapper.Map<RoadmapDto>(existingRoadmap);
-
-            return roadmapDto;
-
-
+            return _mapper.Map<RoadmapDto>(existingRoadmap);
         }
-
     }
 }

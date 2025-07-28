@@ -1,21 +1,24 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.BuisnessLogicLayer.Services;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SkillCraft.Api.Controllers.RoadmapManagement
 {
-    //[Authorize(Roles = "Editor,Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class RoadmapsController : ControllerBase
     {
         private readonly IRoadmapsService _roadmapsService;
+        private readonly Func<string, IRoadmapCreationStrategy> _strategyFactory;
 
-        public RoadmapsController(IRoadmapsService roadmapsService)
+        public RoadmapsController(IRoadmapsService roadmapsService, Func<string, IRoadmapCreationStrategy> strategyFactory)
         {
             _roadmapsService = roadmapsService;
+            _strategyFactory = strategyFactory;
         }
 
         [HttpGet]
@@ -26,58 +29,52 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
             return Ok(roadmaps);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddAsync(AddRoadmapRequest addRoadmapRequest)
+        /// <summary>
+        /// Creates a roadmap manually.
+        /// </summary>
+        [HttpPost("manual")]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> AddManualAsync(AddRoadmapRequest addRoadmapRequest)
         {
-            var roadmap = await _roadmapsService.Add(addRoadmapRequest);
+            var strategy = _strategyFactory("manual");
+            var roadmap = await _roadmapsService.Add(strategy, addRoadmapRequest);
+            return CreatedAtRoute("GetRoadmapAsync", new { id = roadmap.Id }, roadmap);
+        }
 
-            if (roadmap is null)
-            {
-                return BadRequest();
-            }
-            return CreatedAtRoute("GetRoadmapAsync", new { id = roadmap.Id}, roadmap);
+        /// <summary>
+        /// Creates a roadmap using AI.
+        /// </summary>
+        [HttpPost("ai")]
+        //[Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> AddAiAsync([FromBody] AiRoadmapParameters aiParams)
+        {
+            var strategy = _strategyFactory("ai");
+            var roadmap = await _roadmapsService.Add(strategy, aiParams);
+            return CreatedAtRoute("GetRoadmapAsync", new { id = roadmap.Id }, roadmap);
         }
 
         [HttpGet("{id}", Name = "GetRoadmapAsync")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAsync(string id)
         {
-            try
-            {
-                var roadmap = await _roadmapsService.Get(id);
-                return Ok(roadmap);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+            var roadmap = await _roadmapsService.Get(id);
+            return Ok(roadmap);
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             var roadmap = await _roadmapsService.DeleteAsync(id);
-
-            if (roadmap is null)
-            {
-                return BadRequest();
-            }
             return Ok(roadmap);
         }
 
-        [HttpPut]
-        [Route("{id}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute]string id,[FromBody] UpdateRoadmapRequest updateRoadmapRequest)
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] string id, [FromBody] UpdateRoadmapRequest updateRoadmapRequest)
         {
             var roadmap = await _roadmapsService.UpdateAsync(id, updateRoadmapRequest);
-
-            if (roadmap is null)
-            {
-                return BadRequest();
-            }
-
             return Ok(roadmap);
         }
-
     }
 }
