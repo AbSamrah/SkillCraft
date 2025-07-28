@@ -55,8 +55,8 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
             {
                 throw new KeyNotFoundException("Profile not found.");
             }
-            List<string> steps = new List<string>();
-            steps = profile.FinishedSteps.FindAll(s => stepsIds.Contains(s));
+            var steps = new List<string>();
+            steps.AddRange(stepsIds.FindAll(s => profile.FinishedSteps.Exists(step => step == s)));
             return steps;
         }
 
@@ -67,7 +67,8 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
             {
                 throw new KeyNotFoundException("Profile not found.");
             }
-            List<string> newSteps = stepsIds.Where(s => !profile.FinishedSteps.Contains(s)).ToList();
+            var newSteps = new List<string>();
+            newSteps = stepsIds.FindAll(s => !profile.FinishedSteps.Exists(step => step == s));
             profile.FinishedSteps.AddRange(newSteps);
             await _profileRepository.Update(profile);
         }
@@ -79,7 +80,7 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
             {
                 throw new KeyNotFoundException("Profile not found.");
             }
-            profile.FinishedSteps.RemoveAll(s => stepsIds.Contains(s));
+            profile.FinishedSteps.RemoveAll(s => stepsIds.Exists(step => step == s));
             await _profileRepository.Update(profile);
         }
 
@@ -138,5 +139,14 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
             await _profileRepository.Remove(userId);
         }
 
+        public async Task<bool> CheckRoadmap(string userId, string roadmapId)
+        {
+            var profile = await _profileRepository.GetById(userId);
+            if(profile is null)
+            {
+                throw new KeyNotFoundException("Profile not found.");
+            }
+            return profile.Roadmaps.Exists(r => r.Id == roadmapId);
+        }
     }
 }

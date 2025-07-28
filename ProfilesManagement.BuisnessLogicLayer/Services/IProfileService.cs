@@ -27,6 +27,8 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
 
         Task RemoveRoadmap(string userId, string roadmapId);
 
+        Task<bool> CheckRoadmap(string userId, string roadmapId);
+
         Task Remove(string userId);
     }
 }

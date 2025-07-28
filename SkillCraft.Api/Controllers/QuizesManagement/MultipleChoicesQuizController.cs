@@ -43,11 +43,12 @@ namespace Api.Controllers
         public async Task<IActionResult> GetAsync(string id)
         {
             var quiz = await _quizService.GetById(id);
-            quiz.Answer = null;
             if (quiz is null)
             {
-                return BadRequest("Something went wrong.");
+                return NotFound($"Quiz with ID {id} not found.");
             }
+
+            quiz.Answer = null;
 
             return Ok(quiz);
         }
@@ -78,13 +79,14 @@ namespace Api.Controllers
             return Ok(quiz);
         }
 
-        [HttpGet]
-        [Route("/answer/{id}")]
+        [HttpGet("answer/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> CheckAnswer([FromRoute] string id, [FromQuery] string answer)
         {
             var result = await _quizService.CheckAnswer(id, answer);
-            return Ok(result);
+            return Ok(result); 
         }
+
+
     }
 }
