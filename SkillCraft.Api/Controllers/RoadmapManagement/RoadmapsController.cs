@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RoadmapMangement.BuisnessLogicLayer.Filters;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.BuisnessLogicLayer.Services;
 using System;
@@ -13,9 +14,9 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
     public class RoadmapsController : ControllerBase
     {
         private readonly IRoadmapsService _roadmapsService;
-        private readonly Func<string, IRoadmapCreationStrategy> _strategyFactory;
+        private readonly IStrategyFactory _strategyFactory;
 
-        public RoadmapsController(IRoadmapsService roadmapsService, Func<string, IRoadmapCreationStrategy> strategyFactory)
+        public RoadmapsController(IRoadmapsService roadmapsService, IStrategyFactory strategyFactory)
         {
             _roadmapsService = roadmapsService;
             _strategyFactory = strategyFactory;
@@ -23,32 +24,25 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery] EntityFilter filter)
         {
-            var roadmaps = await _roadmapsService.GetAll();
+            var roadmaps = await _roadmapsService.GetAll(filter);
             return Ok(roadmaps);
         }
 
-        /// <summary>
-        /// Creates a roadmap manually.
-        /// </summary>
         [HttpPost("manual")]
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> AddManualAsync(AddRoadmapRequest addRoadmapRequest)
         {
-            var strategy = _strategyFactory("manual");
+            var strategy = _strategyFactory.CreateStrategy("manual");
             var roadmap = await _roadmapsService.Add(strategy, addRoadmapRequest);
             return CreatedAtRoute("GetRoadmapAsync", new { id = roadmap.Id }, roadmap);
         }
 
-        /// <summary>
-        /// Creates a roadmap using AI.
-        /// </summary>
         [HttpPost("ai")]
-        //[Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> AddAiAsync([FromBody] AiRoadmapParameters aiParams)
         {
-            var strategy = _strategyFactory("ai");
+            var strategy = _strategyFactory.CreateStrategy("ai");
             var roadmap = await _roadmapsService.Add(strategy, aiParams);
             return CreatedAtRoute("GetRoadmapAsync", new { id = roadmap.Id }, roadmap);
         }

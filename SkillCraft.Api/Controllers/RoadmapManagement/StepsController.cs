@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RoadmapMangement.BuisnessLogicLayer.Filters;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.BuisnessLogicLayer.Services;
 
@@ -17,9 +18,9 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery] EntityFilter filter)
         {
-            var steps = await _stepsService.GetAll();
+            var steps = await _stepsService.GetAll(filter);
             return Ok(steps);
         }
 

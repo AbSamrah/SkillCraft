@@ -1,4 +1,5 @@
-﻿using RoadmapMangement.BuisnessLogicLayer.Models;
+﻿using RoadmapMangement.BuisnessLogicLayer.Filters;
+using RoadmapMangement.BuisnessLogicLayer.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         /// Retrieves all roadmaps.
         /// </summary>
         /// <returns>A list of all roadmaps as DTOs.</returns>
-        Task<List<RoadmapDto>> GetAll();
+        Task<List<RoadmapDto>> GetAll(EntityFilter filter);
 
         /// <summary>
         /// Adds a new roadmap using a specified creation strategy.

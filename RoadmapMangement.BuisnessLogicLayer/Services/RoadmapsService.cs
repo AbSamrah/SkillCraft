@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using RoadmapMangement.BuisnessLogicLayer.Filters;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.DataAccessLayer.Interfaces;
 using RoadmapMangement.DataAccessLayer.Models;
@@ -30,6 +31,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         public async Task<RoadmapDto> Add(IRoadmapCreationStrategy strategy, object parameters)
         {
             var roadmap = await strategy.CreateRoadmap(parameters);
+
             _roadmapsRepository.Add(roadmap);
             await _uow.Commit();
             return _mapper.Map<RoadmapDto>(roadmap);
@@ -61,9 +63,9 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             return roadmapDto;
         }
 
-        public async Task<List<RoadmapDto>> GetAll()
+        public async Task<List<RoadmapDto>> GetAll(EntityFilter filter)
         {
-            var roadmaps = await _roadmapsRepository.GetAll();
+            var roadmaps = await _roadmapsRepository.GetAll(filter.Name, filter.PageNumber, filter.PageSize);
             return _mapper.Map<List<RoadmapDto>>(roadmaps);
         }
 

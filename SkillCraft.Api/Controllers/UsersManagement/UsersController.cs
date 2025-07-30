@@ -29,7 +29,7 @@ namespace API.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name ="GetUserAsync")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var user = await _usersService.GetByIdAsync(id);
@@ -63,7 +63,7 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+            return CreatedAtRoute("GetUserAsync", new { id = user.Id }, user);
         }
 
         [HttpDelete("{id}")]

@@ -18,7 +18,9 @@ namespace QuizesManagement.DataAccessLayer.Models
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         [BsonElement("question")]
         public string Question {  get; set; }
-        [BsonElement("tag")]
-        public string Tag {  get; set; }
+        [BsonElement("tags")]
+        public List<string> Tags {  get; set; }
+        [BsonElement("_t")]
+        public string Type { get; set; }
     }
 }

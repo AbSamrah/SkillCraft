@@ -50,10 +50,16 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
             return entity;
         }
 
-        public virtual async Task<List<TEntity>> GetAll()
+        public virtual async Task<List<TEntity>> GetAll(string name = "", int pageNumber = 0, int pageSize = 9)
         {
-            var all = await _dbSet.FindAsync(Builders<TEntity>.Filter.Empty);
-            return all.ToList();
+            var filter = string.IsNullOrEmpty(name)
+                ? Builders<TEntity>.Filter.Empty
+                : Builders<TEntity>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(name, "i"));
+
+            return await _dbSet.Find(filter)
+                               .Skip(pageNumber * pageSize)
+                               .Limit(pageSize)
+                               .ToListAsync();
         }
 
         public virtual async Task Update(TEntity entity)

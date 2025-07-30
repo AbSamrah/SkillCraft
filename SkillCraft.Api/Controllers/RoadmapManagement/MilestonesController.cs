@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RoadmapMangement.BuisnessLogicLayer.Filters;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.BuisnessLogicLayer.Services;
 
@@ -17,9 +18,9 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery] EntityFilter filter)
         {
-            var milestones = await _milestonesService.GetAll();
+            var milestones = await _milestonesService.GetAll(filter);
             return Ok(milestones);
         }
 
@@ -32,11 +33,10 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
             {
                 return BadRequest();
             }
-            //return CreatedAtAction(nameof(GetAsync), new { id = milestone.Id }, milestone);
-            return Ok(milestone);
+            return CreatedAtRoute("GetMilestoneAsync", new { id = milestone.Id }, milestone);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetMilestoneAsync")]
         public async Task<IActionResult> GetAsync(string id)
         {
             var milestone = await _milestonesService.Get(id);

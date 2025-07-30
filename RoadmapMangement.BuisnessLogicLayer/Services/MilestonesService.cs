@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MongoDB.Driver;
+using RoadmapMangement.BuisnessLogicLayer.Filters;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.DataAccessLayer.Interfaces;
 using RoadmapMangement.DataAccessLayer.Models;
@@ -28,9 +29,9 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             _stepsRepository = stepsRepository;
         }
 
-        public async Task<List<MilestoneDto>> GetAll()
+        public async Task<List<MilestoneDto>> GetAll(EntityFilter filter)
         {
-            var steps = await _milestonesRepository.GetAll();
+            var steps = await _milestonesRepository.GetAll(filter.Name, filter.PageNumber, filter.PageSize);
             return _mapper.Map<List<MilestoneDto>>(steps);
         }
 

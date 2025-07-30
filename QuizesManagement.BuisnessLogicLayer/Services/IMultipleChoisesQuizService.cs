@@ -13,7 +13,7 @@ namespace QuizesManagement.BuisnessLogicLayer.Services
 
         public Task<MultipleChoicesQuizDto> Update(EditMultipleChoicesQuizRequest quizRequest);
 
-        public Task<MultipleChoicesQuizDto> Add(AddMultipleChoicesQuizRequest quizRequest);
+        Task<MultipleChoicesQuizDto> Add(IQuizCreationStrategy strategy, object parameters);
 
         public Task<bool> CheckAnswer(string quizId, string answer);
     }

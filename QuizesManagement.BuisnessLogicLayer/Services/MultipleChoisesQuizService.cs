@@ -15,20 +15,18 @@ namespace QuizesManagement.BuisnessLogicLayer.Services
     {
         private readonly IMultipleChoicesQuizRepository _multipleChoicesQuizRepository;
 
-        public MultipleChoisesQuizService(IMultipleChoicesQuizRepository multipleChoicesQuizRepository, IQuizRepository quizRepository, IMapper mapper, IUnitOfWork uow) : base(quizRepository , mapper, uow)
+        public MultipleChoisesQuizService(IMultipleChoicesQuizRepository multipleChoicesQuizRepository, IMapper mapper, IUnitOfWork uow) : base(multipleChoicesQuizRepository , mapper, uow)
         {
             _multipleChoicesQuizRepository = multipleChoicesQuizRepository;
         }
 
-        public async Task<MultipleChoicesQuizDto> Add(AddMultipleChoicesQuizRequest quizRequest)
+        public async Task<MultipleChoicesQuizDto> Add(IQuizCreationStrategy strategy, object parameters)
         {
-            var quiz = _mapper.Map<MultipleChoicesQuiz>(quizRequest);
-
+            var quiz = await strategy.CreateMultipleChoicesQuiz(parameters);
+            quiz.Type = "MultipleChoices";
             _quizRepository.Add(quiz);
             await _uow.Commit();
-
-            MultipleChoicesQuizDto quizDto = _mapper.Map<MultipleChoicesQuizDto>(quiz);
-            return quizDto;
+            return _mapper.Map<MultipleChoicesQuizDto>(quiz);
         }
 
         public async Task<bool> CheckAnswer(string quizId, string answer)
@@ -39,19 +37,7 @@ namespace QuizesManagement.BuisnessLogicLayer.Services
                 throw new Exception("Quiz not found.");
             }
 
-
-            if (answer == null) 
-            {
-                throw new Exception("The answer can't be empty.");
-            }
-            if (answer == quiz.Answer)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return quiz.Answer == answer;
 
         }
 
@@ -79,7 +65,11 @@ namespace QuizesManagement.BuisnessLogicLayer.Services
 
             existingQuiz.Question = quizRequest.Question;
             existingQuiz.Answer = quizRequest.Answer;
-            existingQuiz.Tag = quizRequest.Tag;
+            existingQuiz.Tags = new List<string>();
+            foreach (var tag in quizRequest.Tags)
+            {
+                existingQuiz.Tags.Add(tag);
+            }
             existingQuiz.Options = new List<string>();
 
             foreach (string option in quizRequest.Options)

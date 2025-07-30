@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QuizesManagement.BuisnessLogicLayer.Models
 {
-    public class MultipleChoicesQuizDto: MultipleChoicesQuizRequest
+    public class EditTrueOrFalseQuizRequest : TrueOrFalseQuizRequest
     {
         public string Id { get; set; }
     }

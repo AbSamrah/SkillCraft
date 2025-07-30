@@ -13,13 +13,21 @@ namespace QuizesManagement.BuisnessLogicLayer.Profiles
     {
         public QuizesProfile()
         {
+            // General
             CreateMap<Quiz, QuizDto>();
-
             CreateMap<QuizRequest, Quiz>();
 
+            // Multiple Choice
             CreateMap<MultipleChoicesQuiz, MultipleChoicesQuizDto>();
+            CreateMap<AddMultipleChoicesQuizRequest, MultipleChoicesQuiz>();
+            CreateMap<EditMultipleChoicesQuizRequest, MultipleChoicesQuiz>();
+            CreateMap<AiGeneratedMcq, MultipleChoicesQuiz>();
 
-            CreateMap<MultipleChoicesQuizRequest, MultipleChoicesQuiz>();
+            // True or False
+            CreateMap<TrueOrFalseQuiz, TrueOrFalseQuizDto>();
+            CreateMap<AddTrueOrFalseQuizRequest, TrueOrFalseQuiz>();
+            CreateMap<EditTrueOrFalseQuizRequest, TrueOrFalseQuiz>();
+            CreateMap<AiGeneratedTfq, TrueOrFalseQuiz>();
         }
     }
 }

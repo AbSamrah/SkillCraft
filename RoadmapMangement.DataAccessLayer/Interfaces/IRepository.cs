@@ -11,7 +11,7 @@ namespace RoadmapMangement.DataAccessLayer.Interfaces
     {
         void Add(TEntity entity);
         Task<TEntity> GetById(string id);
-        Task<List<TEntity>> GetAll();
+        Task<List<TEntity>> GetAll(string name = "", int pageNumber = 0, int pageSize = 9);
         Task Update(TEntity entity);
         void Remove(string id);
     }

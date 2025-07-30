@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using RoadmapMangement.BuisnessLogicLayer.Filters;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.DataAccessLayer.Interfaces;
 using RoadmapMangement.DataAccessLayer.Models;
@@ -27,9 +28,9 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             _mapper = mapper;
         }
 
-        public async Task<List<StepDto>> GetAll()
+        public async Task<List<StepDto>> GetAll(EntityFilter filter)
         {
-            var steps = await _stepsRepository.GetAll();
+            var steps = await _stepsRepository.GetAll(filter.Name, filter.PageNumber, filter.PageSize);
             return _mapper.Map<List<StepDto>>(steps);
         }
 

@@ -5,12 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoadmapMangement.BuisnessLogicLayer.Models
+namespace QuizesManagement.BuisnessLogicLayer.Models
 {
-    public class AiRoadmapParameters
+    public class AiQuizParameters
     {
         [Required]
-        [MinLength(2)]
-        public string Prompt { get; set; }
+        public string Topic { get; set; }
+
+        [Required]
+        public string Difficulty { get; set; }
     }
 }

@@ -18,11 +18,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Creates a roadmap using an AddRoadmapRequest object.
-        /// </summary>
-        /// <param name="parameters">The request object, which must be of type AddRoadmapRequest.</param>
-        /// <returns>A completed task containing the newly mapped Roadmap object.</returns>
         public Task<Roadmap> CreateRoadmap(object parameters)
         {
             if (parameters is not AddRoadmapRequest addRoadmapRequest)

@@ -79,6 +79,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IMultipleChoicesQuizRepository, MultipleChoicesQuizRepository>();
+builder.Services.AddScoped<ITrueOrFalseQuizRepository, TrueOrFalseQuizRepository>();
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -90,25 +91,36 @@ builder.Services.AddScoped<MilestonesService>();
 builder.Services.AddScoped<IRoadmapsService, RoadmapsService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IMultipleChoisesQuizService, MultipleChoisesQuizService>();
+builder.Services.AddScoped<ITrueOrFalseQuizService, TrueOrFlaseQuizService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+
+builder.Services.AddScoped<RoadmapMangement.BuisnessLogicLayer.Services.IAiGenerator, RoadmapMangement.BuisnessLogicLayer.Services.GeminiAiAdapter>();
+builder.Services.AddScoped<QuizesManagement.BuisnessLogicLayer.Services.IAiGenerator, QuizesManagement.BuisnessLogicLayer.Services.GeminiAiAdapter>();
+
+builder.Services.AddScoped<RoadmapMangement.BuisnessLogicLayer.Services.IStrategyFactory, RoadmapMangement.BuisnessLogicLayer.Services.StrategyFactory>();
+builder.Services.AddScoped<QuizesManagement.BuisnessLogicLayer.Services.IStrategyFactory, QuizesManagement.BuisnessLogicLayer.Services.StrategyFactory>();
+
 
 // Register Roadmap Creation Strategies
 builder.Services.AddScoped<ManualRoadmapCreationStrategy>();
 builder.Services.AddScoped<AiRoadmapCreationStrategy>();
 
-// Register the factory delegate to resolve strategies by key
-builder.Services.AddTransient<Func<string, IRoadmapCreationStrategy>>(serviceProvider => key =>
-{
-    switch (key.ToLowerInvariant())
-    {
-        case "manual":
-            return serviceProvider.GetRequiredService<ManualRoadmapCreationStrategy>();
-        case "ai":
-            return serviceProvider.GetRequiredService<AiRoadmapCreationStrategy>();
-        default:
-            throw new KeyNotFoundException($"Strategy '{key}' not found.");
-    }
-});
+builder.Services.AddScoped<ManualQuizCreationStrategy>();
+builder.Services.AddScoped<AiQuizCreationStrategy>();
+
+//// Register the factory delegate to resolve strategies by key
+//builder.Services.AddTransient<Func<string, IRoadmapCreationStrategy>>(serviceProvider => key =>
+//{
+//    switch (key.ToLowerInvariant())
+//    {
+//        case "manual":
+//            return serviceProvider.GetRequiredService<ManualRoadmapCreationStrategy>();
+//        case "ai":
+//            return serviceProvider.GetRequiredService<AiRoadmapCreationStrategy>();
+//        default:
+//            throw new KeyNotFoundException($"Strategy '{key}' not found.");
+//    }
+//});
 
 // Units of Work
 builder.Services.AddScoped<RoadmapMangement.DataAccessLayer.Interfaces.IUnitOfWork, RoadmapMangement.DataAccessLayer.Uow.UnitOfWork>();
