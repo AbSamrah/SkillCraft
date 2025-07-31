@@ -55,6 +55,7 @@ namespace Api.Controllers
         {
             var strategy = _strategyFactory.CreateStrategy("manual");
             var quiz = await _mcqService.Add(strategy, request);
+            quiz.Answer = null;
             return CreatedAtRoute("GetMcqById", new { id = quiz.Id }, quiz);
         }
 
@@ -64,6 +65,7 @@ namespace Api.Controllers
         {
             var strategy = _strategyFactory.CreateStrategy("ai");
             var quiz = await _mcqService.Add(strategy, parameters);
+            quiz.Answer = null;
             return CreatedAtRoute("GetMcqById", new {id = quiz.Id}, quiz);
         }
 
@@ -103,6 +105,7 @@ namespace Api.Controllers
         {
             var strategy = _strategyFactory.CreateStrategy("manual");
             var quiz = await _tfqService.Add(strategy, request);
+            quiz.Answer = null;
             return CreatedAtRoute("GetTfqById", new { id = quiz.Id }, quiz);
         }
 
@@ -112,6 +115,7 @@ namespace Api.Controllers
         {
             var strategy = _strategyFactory.CreateStrategy("ai");
             var quiz = await _tfqService.Add(strategy, parameters);
+            quiz.Answer = null;
             return CreatedAtRoute("GetTfqById", new { id = quiz.Id }, quiz);
         }
 

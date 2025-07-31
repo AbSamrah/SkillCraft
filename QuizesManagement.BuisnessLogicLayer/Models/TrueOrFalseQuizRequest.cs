@@ -10,6 +10,6 @@ namespace QuizesManagement.BuisnessLogicLayer.Models
     {
         public bool? Answer { get; set; }
 
-        public string Type { get; set; } = "TrueOrFalseQuiz";
+        public string Type { get; set; } = "TrueOrFalse";
     }
 }

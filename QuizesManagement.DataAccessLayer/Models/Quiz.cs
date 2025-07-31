@@ -10,7 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QuizesManagement.DataAccessLayer.Models
 {
-    [BsonKnownTypes(typeof(MultipleChoicesQuiz))]
+    [BsonKnownTypes(typeof(MultipleChoicesQuiz), typeof(TrueOrFalseQuiz))]
     public class Quiz
     {
         [BsonId]
