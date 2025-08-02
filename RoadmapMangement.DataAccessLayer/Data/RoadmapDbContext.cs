@@ -23,13 +23,11 @@ namespace RoadmapMangement.DataAccessLayer.Data
             _configuration = configuration;
             _commands = new List<Func<Task>>();
 
-            // This now points to the specific database for roadmaps
             var connectionString = _configuration["MongoSettings:Connection"];
             var databaseName = _configuration["MongoSettings:Databases:RoadmapDB"];
 
             MongoClient = new MongoClient(connectionString);
             Database = MongoClient.GetDatabase(databaseName);
-            // Now using the aliased ClusterType
             _supportsTransactions = MongoClient.Cluster.Description.Type == ClusterType.ReplicaSet;
         }   
 

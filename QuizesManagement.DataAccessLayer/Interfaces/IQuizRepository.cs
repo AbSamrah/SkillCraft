@@ -11,7 +11,7 @@ namespace QuizesManagement.DataAccessLayer.Interfaces
     public interface IQuizRepository
     {
         void Add(Quiz quiz);
-        Task<List<Quiz>> GetAll(List<string> tags, List<string> finishedQuizzes, int pageNumber = 0, int pageSize = 9);
+        Task<List<Quiz>> GetAll(List<string> tags, int pageNumber = 0, int pageSize = 9);
         Task<Quiz> GetById(string id);
         void Remove(string id);
     }

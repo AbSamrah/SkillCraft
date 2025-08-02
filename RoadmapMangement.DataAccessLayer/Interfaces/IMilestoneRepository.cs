@@ -9,7 +9,5 @@ namespace RoadmapMangement.DataAccessLayer.Interfaces
 {
     public interface   IMilestoneRepository: IRepository<Milestone>
     {
-        //public Task<Milestone> GetMilestoneWithSteps(string milestoneId);
-        //public  Task<bool> AddStepsToMilestone(string milestoneId, List<string> stepIds);
     }
 }

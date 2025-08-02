@@ -15,11 +15,9 @@ namespace RoadmapMangement.DataAccessLayer.Models
         [BsonElement("tags")]
         public List<string> Tags { get; set; } = new List<string>();
 
-        // Reference milestones by ID (better for large collections)
         [BsonElement("milestones")]
         public List<string> MilestonesIds { get; set; } = new List<string>();
 
-        // Ignored property to be populated when needed
         [BsonIgnore]
         public List<Milestone> Milestones { get; set; } = new List<Milestone>();
 

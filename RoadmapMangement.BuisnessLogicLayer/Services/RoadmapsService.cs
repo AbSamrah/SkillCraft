@@ -9,9 +9,6 @@ using System.Threading.Tasks;
 
 namespace RoadmapMangement.BuisnessLogicLayer.Services
 {
-    /// <summary>
-    /// Service for managing roadmap operations.
-    /// </summary>
     public class RoadmapsService : IRoadmapsService
     {
         private readonly IRoadmapRepository _roadmapsRepository;
@@ -25,9 +22,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Adds a new roadmap by delegating its creation to the provided strategy.
-        /// </summary>
         public async Task<RoadmapDto> Add(IRoadmapCreationStrategy strategy, object parameters)
         {
             var roadmap = await strategy.CreateRoadmap(parameters);
@@ -78,7 +72,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
                 throw new KeyNotFoundException("Roadmap not found.");
             }
 
-            // Use AutoMapper to update the existing entity from the request object
             _mapper.Map(updateRoadmapRequest, existingRoadmap);
 
             _roadmapsRepository.Update(existingRoadmap);

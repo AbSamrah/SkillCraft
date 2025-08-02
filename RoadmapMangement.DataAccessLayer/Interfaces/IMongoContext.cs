@@ -13,8 +13,5 @@ namespace RoadmapMangement.DataAccessLayer.Interfaces
         Task<int> SaveChanges();
         IMongoCollection<T> GetCollection<T>(string name);
 
-        // Add these methods for better transaction support
-        //IClientSessionHandle StartSession();
-        //Task WithTransactionAsync(Func<IClientSessionHandle, Task> action);
     }
 }

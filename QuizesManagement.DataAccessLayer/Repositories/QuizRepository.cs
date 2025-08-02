@@ -53,7 +53,7 @@ namespace QuizesManagement.DataAccessLayer.Repositories
         }
         
 
-        public virtual async Task<List<Quiz>> GetAll(List<string> tags, List<string> finishedQuizzes, int pageNumber = 0, int pageSize = 9)
+        public virtual async Task<List<Quiz>> GetAll(List<string> tags, int pageNumber = 0, int pageSize = 9)
         {
 
             var filter = tags.Count() == 0

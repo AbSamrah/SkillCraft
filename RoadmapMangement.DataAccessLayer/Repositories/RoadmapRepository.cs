@@ -58,14 +58,12 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
                                                    .Select(id => stepDict[id])
                                                    .ToList();
                         
-                        // Calculate duration for this milestone
                         milestone.DurationInMinutes = milestone.Steps.Sum(s => s.DurationInMinutes);
                     }
                 }
             }
             
             roadmap.Milestones = orderedMilestones;
-            // Calculate total duration for the roadmap
             roadmap.DurationInMinutes = roadmap.Milestones.Sum(m => m.DurationInMinutes);
 
             return roadmap;

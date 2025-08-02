@@ -10,7 +10,5 @@ namespace RoadmapMangement.DataAccessLayer.Interfaces
     public interface IRoadmapRepository : IRepository<Roadmap>
     {
         Task<List<Roadmap>> GetActiveRoadmaps();
-        //Task<bool> AddMilestoneToRoadmap(string roadmapId, Milestone milestone);
-        //Task<Roadmap> GetRoadmapWithMilestones(string roadmapId);
     }
 }

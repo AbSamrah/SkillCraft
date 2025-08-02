@@ -24,13 +24,11 @@ namespace QuizesManagement.DataAccessLayer.Data
             _configuration = configuration;
             _commands = new List<Func<Task>>();
 
-            // This now points to the specific database for roadmaps
             var connectionString = _configuration["MongoSettings:Connection"];
             var databaseName = _configuration["MongoSettings:Databases:QuizesDB"];
 
             MongoClient = new MongoClient(connectionString);
             Database = MongoClient.GetDatabase(databaseName);
-            // Now using the aliased ClusterType
             _supportsTransactions = MongoClient.Cluster.Description.Type == ClusterType.ReplicaSet;
         }
 
@@ -84,19 +82,6 @@ namespace QuizesManagement.DataAccessLayer.Data
             return _commands.Count;
         }
 
-        private void ConfigureMongo()
-        {
-            if (MongoClient != null) return;
-
-            var connectionString = _configuration["MongoSettings:Connection"]
-                ?? throw new InvalidOperationException("MongoDB connection string is missing");
-
-            var databaseName = _configuration["MongoSettings:DatabaseName"]
-                ?? throw new InvalidOperationException("MongoDB database name is missing");
-
-            MongoClient = new MongoClient(connectionString);
-            Database = MongoClient.GetDatabase(databaseName);
-        }
 
         public IMongoCollection<T> GetCollection<T>(string name)
         {

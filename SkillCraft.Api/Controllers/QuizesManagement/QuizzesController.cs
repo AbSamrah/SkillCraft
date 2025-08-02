@@ -38,12 +38,10 @@ namespace Api.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllQuizzes([FromQuery] string userId, [FromQuery] QuizFilter filter)
+        public async Task<IActionResult> GetAllQuizzes([FromQuery] QuizFilter filter)
         {
-            List<string> quizzesIds = new List<string>();
-            quizzesIds = await _profileService.GetAllQuizzes(userId);
             
-            var quizzes = await _quizService.GetAll(filter, quizzesIds);
+            var quizzes = await _quizService.GetAll(filter);
             return Ok(quizzes);
         }
 

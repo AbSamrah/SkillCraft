@@ -29,7 +29,6 @@ using UsersManagement.BuissnessLogicLayer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers()
                 .AddJsonOptions(opt =>
@@ -67,10 +66,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Register HttpClient for DI
 builder.Services.AddHttpClient();
 
-// Business Services & Repositories
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
@@ -101,32 +98,16 @@ builder.Services.AddScoped<RoadmapMangement.BuisnessLogicLayer.Services.IStrateg
 builder.Services.AddScoped<QuizesManagement.BuisnessLogicLayer.Services.IStrategyFactory, QuizesManagement.BuisnessLogicLayer.Services.StrategyFactory>();
 
 
-// Register Roadmap Creation Strategies
 builder.Services.AddScoped<ManualRoadmapCreationStrategy>();
 builder.Services.AddScoped<AiRoadmapCreationStrategy>();
 
 builder.Services.AddScoped<ManualQuizCreationStrategy>();
 builder.Services.AddScoped<AiQuizCreationStrategy>();
 
-//// Register the factory delegate to resolve strategies by key
-//builder.Services.AddTransient<Func<string, IRoadmapCreationStrategy>>(serviceProvider => key =>
-//{
-//    switch (key.ToLowerInvariant())
-//    {
-//        case "manual":
-//            return serviceProvider.GetRequiredService<ManualRoadmapCreationStrategy>();
-//        case "ai":
-//            return serviceProvider.GetRequiredService<AiRoadmapCreationStrategy>();
-//        default:
-//            throw new KeyNotFoundException($"Strategy '{key}' not found.");
-//    }
-//});
 
-// Units of Work
 builder.Services.AddScoped<RoadmapMangement.DataAccessLayer.Interfaces.IUnitOfWork, RoadmapMangement.DataAccessLayer.Uow.UnitOfWork>();
 builder.Services.AddScoped<QuizesManagement.DataAccessLayer.Interfaces.IUnitOfWork, QuizesManagement.DataAccessLayer.Uow.UnitOfWork>();
 
-// AutoMapper Profiles
 builder.Services.AddAutoMapper(typeof(UsersProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(StepsProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(QuizesProfile).Assembly);
@@ -144,7 +125,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())

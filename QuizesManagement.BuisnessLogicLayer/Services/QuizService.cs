@@ -44,9 +44,9 @@ namespace QuizesManagement.BuisnessLogicLayer.Services
             return quizDto;
         }
 
-        public async Task<List<QuizDto>> GetAll(QuizFilter filter, List<string> finishedQuizzes)
+        public async Task<List<QuizDto>> GetAll(QuizFilter filter)
         {
-            var quizzesFromDb = await _quizRepository.GetAll(filter.Tags, finishedQuizzes, filter.PageNumber, filter.PageSize);
+            var quizzesFromDb = await _quizRepository.GetAll(filter.Tags, filter.PageNumber, filter.PageSize);
             var quizDtos = new List<QuizDto>();
 
             foreach (var quiz in quizzesFromDb)
