@@ -18,8 +18,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Profiles
             CreateMap<AddStepRequest, Step>();
 
             CreateMap<UpdateStepRequest, Step>();
-
-            CreateMap<Step, StepName>().ReverseMap();
         }
     }
 }

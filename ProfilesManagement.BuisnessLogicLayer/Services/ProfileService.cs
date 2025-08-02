@@ -148,5 +148,38 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
             }
             return profile.Roadmaps.Exists(r => r.Id == roadmapId);
         }
+
+        public async Task<List<string>> GetAllSteps(string userId)
+        {
+            var profile = await _profileRepository.GetById(userId);
+            if (profile is null)
+            {
+                throw new KeyNotFoundException("Profile not found.");
+            }
+            return profile.FinishedSteps;
+        }
+
+        public async Task<List<string>> GetAllQuizzes(string userId)
+        {
+            var profile = await _profileRepository.GetById(userId);
+            if(profile is null)
+            {
+                throw new KeyNotFoundException("Profile not found.");
+            }
+
+            return profile.Quizzes;
+        }
+
+        public async Task AddQuiz(string userId, string quizId)
+        {
+            var profile = await _profileRepository.GetById(userId);
+            if (profile is null)
+            {
+                throw new KeyNotFoundException("Profile not found.");
+            }
+
+            profile.Quizzes.Add(quizId);
+            await _profileRepository.Update(profile);
+        }
     }
 }

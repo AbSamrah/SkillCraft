@@ -19,7 +19,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Profiles
 
             CreateMap<UpdateMilestoneRequest, Milestone>();
 
-            CreateMap<Milestone, MilestoneName>().ReverseMap();
         }
     }
 }

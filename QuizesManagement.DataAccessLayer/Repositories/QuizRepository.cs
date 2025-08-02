@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace QuizesManagement.DataAccessLayer.Repositories
 {
@@ -52,10 +53,18 @@ namespace QuizesManagement.DataAccessLayer.Repositories
         }
         
 
-        public virtual async Task<List<Quiz>> GetAll()
+        public virtual async Task<List<Quiz>> GetAll(List<string> tags, List<string> finishedQuizzes, int pageNumber = 0, int pageSize = 9)
         {
-            var all = await _dbSet.FindAsync(Builders<Quiz>.Filter.Empty);
-            return all.ToList();
+
+            var filter = tags.Count() == 0
+                ? Builders<Quiz>.Filter.Empty
+                : Builders<Quiz>.Filter.Where(q => q.Tags.Any(t => tags.Contains(t)));
+
+            return await _dbSet.Find(filter)
+                                .Skip(pageNumber * pageSize)
+                                .Limit(pageSize)
+                                .ToListAsync();
+            
         }
 
        

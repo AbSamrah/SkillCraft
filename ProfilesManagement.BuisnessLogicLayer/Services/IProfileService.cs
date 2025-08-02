@@ -13,6 +13,12 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
 
         Task<List<RoadmapStatusDto>> GetAllRoadmaps(string userId);
 
+        Task<List<string>> GetAllSteps(string userId);
+
+        Task<List<string>> GetAllQuizzes(string userId);
+
+        Task AddQuiz(string userId, string quizId);
+
         Task<List<RoadmapStatusDto>> GetRoadmaps(string userId, bool isFinished=true);
 
         Task<List<string>> GetFinishedStep(string userId, List<string> stepsIds);

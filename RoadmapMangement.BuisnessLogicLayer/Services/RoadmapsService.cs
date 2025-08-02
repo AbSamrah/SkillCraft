@@ -81,7 +81,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             // Use AutoMapper to update the existing entity from the request object
             _mapper.Map(updateRoadmapRequest, existingRoadmap);
 
-            await _roadmapsRepository.Update(existingRoadmap);
+            _roadmapsRepository.Update(existingRoadmap);
             await _uow.Commit();
 
             return _mapper.Map<RoadmapDto>(existingRoadmap);

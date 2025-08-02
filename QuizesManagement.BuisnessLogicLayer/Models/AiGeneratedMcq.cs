@@ -19,6 +19,6 @@ namespace QuizesManagement.BuisnessLogicLayer.Models
         public string Answer { get; set; }
 
         [JsonPropertyName("tags")]
-        public List<string> Tag { get; set; }
+        public List<string> Tags { get; set; }
     }
 }

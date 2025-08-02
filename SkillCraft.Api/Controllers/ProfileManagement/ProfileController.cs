@@ -10,6 +10,7 @@ namespace SkillCraft.Api.Controllers.ProfileManagement
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "User")]
     public class ProfileController : ControllerBase
     {
         private readonly IProfileService _profileService;
@@ -86,6 +87,8 @@ namespace SkillCraft.Api.Controllers.ProfileManagement
             await _profileService.RemoveRoadmap(userId, roadmapId);
             return Ok();
         }
+
+        
 
 
         [HttpGet("{userId}/CheckRoadmap/{roadmapId}")]

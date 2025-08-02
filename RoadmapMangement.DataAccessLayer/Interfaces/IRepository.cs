@@ -10,9 +10,10 @@ namespace RoadmapMangement.DataAccessLayer.Interfaces
     public interface IRepository<TEntity> : IDisposable where TEntity : Entity
     {
         void Add(TEntity entity);
+        Task<List<TEntity>> GetByIds(List<string> ids);
         Task<TEntity> GetById(string id);
         Task<List<TEntity>> GetAll(string name = "", int pageNumber = 0, int pageSize = 9);
-        Task Update(TEntity entity);
+        void Update(TEntity entity);
         void Remove(string id);
     }
 }

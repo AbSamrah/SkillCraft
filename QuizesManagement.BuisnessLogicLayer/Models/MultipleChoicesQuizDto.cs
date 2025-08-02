@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace QuizesManagement.BuisnessLogicLayer.Models
 {
-    public class MultipleChoicesQuizDto: MultipleChoicesQuizRequest
+    public class MultipleChoicesQuizDto: QuizDto
     {
-        public string Id { get; set; }
+        public List<string> Options { get; set; }
+        public string? Answer { get; set; }
     }
 }

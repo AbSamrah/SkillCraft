@@ -35,14 +35,11 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
         {
             if (parameters is not AiRoadmapParameters aiParams)
             {
-                throw new ArgumentException("Invalid parameter type for AiRoadmapCreationStrategy. Expected AiRoadmapParameters.", nameof(parameters));
+                throw new ArgumentException("Invalid parameter type for AiRoadmapCreationStrategy.", nameof(parameters));
             }
 
-            var prompt = ConstructPrompt(aiParams.Prompt);
-
-            // The strategy's only interaction with the AI is through this clean interface.
+            var prompt = ConstructPrompt(aiParams.Prompt, aiParams.CompletedSteps);
             var generatedJson = await _aiGenerator.GenerateJsonAsync(prompt);
-
             var generatedRoadmap = JsonSerializer.Deserialize<AiGeneratedRoadmap>(generatedJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (generatedRoadmap is null)
@@ -50,7 +47,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
                 throw new InvalidOperationException("Failed to deserialize the AI's JSON response.");
             }
 
-            // This business logic (saving to DB) is the core responsibility of the strategy now.
             var roadmap = new Roadmap
             {
                 Name = generatedRoadmap.Title,
@@ -63,55 +59,80 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             foreach (var milestoneData in generatedRoadmap.Milestones)
             {
                 var milestone = new Milestone { Name = milestoneData.Title, Description = milestoneData.Description };
+
                 foreach (var stepData in milestoneData.Steps)
                 {
-                    var step = new Step { Name = stepData.Title, Description = stepData.Description, DurationInMinutes = stepData.DurationInMinutes };
-                    _stepRepository.Add(step);
-                    milestone.StepsIds.Add(step.Id);
+                    // ** This is the new, smarter logic **
+                    if (stepData.IsCompleted && !string.IsNullOrEmpty(stepData.OriginalId))
+                    {
+                        // If the step is marked as completed, just link the existing step ID.
+                        milestone.StepsIds.Add(stepData.OriginalId);
+                    }
+                    else
+                    {
+                        // Otherwise, create a new step as before.
+                        var newStep = new Step { Name = stepData.Title, Description = stepData.Description, DurationInMinutes = stepData.DurationInMinutes };
+                        _stepRepository.Add(newStep);
+                        milestone.StepsIds.Add(newStep.Id);
+                    }
                 }
                 _milestoneRepository.Add(milestone);
                 roadmap.MilestonesIds.Add(milestone.Id);
             }
 
+            // Commit only the NEW steps and milestones
             await _uow.Commit();
             return roadmap;
         }
 
-        private string ConstructPrompt(string skill)
+        private string ConstructPrompt(string skill, List<StepDto> completedSteps)
         {
-            // The prompt engineering logic remains part of the strategy.
+            // Convert the list of completed steps into a simple string format for the prompt.
+            var completedStepsText = completedSteps.Any()
+                ? string.Join(", ", completedSteps.Select(s => $"{{ \"id\": \"{s.Id}\", \"name\": \"{s.Name}\" }}"))
+                : "None";
+
             return $@"
-                You are an expert technical curriculum designer and career advisor. Your task is to generate a comprehensive, high-quality learning roadmap for a '{skill}' developer.
+                You are an expert technical curriculum designer. Your task is to generate a personalized learning roadmap for a '{skill}' developer. Your primary goal is to build upon the user's existing knowledge.
+
                 The response MUST be a single, well-formed JSON object and nothing else.
-                The JSON object must adhere to this exact structure:
+
+                **Existing Steps Already Completed by the User:**
+                [
+                  {completedStepsText}
+                ]
+
+                **JSON Structure Required:**
                 {{
-                  ""title"": ""A Creative and Descriptive Title for a {skill} Roadmap"",
-                  ""description"": ""A detailed description of the {skill} role, its industry importance, and an overview of this learning path."",
+                  ""title"": ""A Creative Title for a Personalized {skill} Roadmap"",
+                  ""description"": ""A detailed description of the role and this personalized learning path."",
                   ""averageSalary"": 115000,
                   ""salaryCurrency"": ""USD"",
-                  ""tags"": [""tag1"", ""tag2"", ""tag3"", ""...""],
+                  ""tags"": [""tag1"", ""tag2""],
                   ""milestones"": [
                     {{
                       ""title"": ""Milestone Name"",
-                      ""description"": ""A summary of this milestone's learning objectives."",
+                      ""description"": ""Milestone objectives."",
                       ""steps"": [
                         {{
-                          ""title"": ""Specific Step Name"",
-                          ""description"": ""A detailed, actionable description of the concept to learn or task to perform."",
-                          ""durationInMinutes"": 240
+                          ""title"": ""Step Name"",
+                          ""description"": ""Detailed description of the concept."",
+                          ""durationInMinutes"": 120,
+                          ""isCompleted"": false,
+                          ""originalId"": null
                         }}
                       ]
                     }}
                   ]
                 }}
-                **Content Generation Rules:**
-                1.  **Title**: Generate a creative and inspiring title for the roadmap.
-                2.  **Description**: Write a detailed, engaging paragraph about the role and the roadmap.
-                3.  **Salary**: Provide a realistic, estimated average annual salary for a mid-level {skill} developer in the United States, with ""USD"" as the currency.
-                4.  **Tags**: Generate a comprehensive list of 10 to 15 relevant, lowercase technical tags.
-                5.  **Milestones**: Structure the roadmap into logical, thematic milestones (e.g., ""Version Control Foundations"", ""API Development"").
-                6.  **Steps**: Steps must be highly specific and granular.
-                7.  **Durations**: Estimate learning time for each step in minutes, assuming a standard learning day is 8 hours (480 minutes).
+
+                **CRITICAL Instructions:**
+                1.  **Prioritize Existing Steps**: Your most important task is to reuse the user's completed steps. Before generating a new step, check if a similar concept already exists in the ""User's Completed Steps"" list. If it does, you MUST use the existing step.
+                2.  **Incorporate Relevant Steps**: If a user's completed step is a logical part of the new '{skill}' roadmap, you MUST include it in your response. When you do, you MUST set ""isCompleted"" to true and you MUST copy its original ""id"" into the ""originalId"" field. Do not change the original title or description.
+                3.  **Generate Only Necessary New Steps**: Only generate a new step if the required knowledge does not exist in the user's completed steps list. For all new steps, ""isCompleted"" MUST be false and ""originalId"" MUST be null.
+                4.  **Logical Flow**: Arrange all steps (both existing and new) into logical, thematic milestones that flow from beginner to advanced. A milestone can and should contain a mix of completed and new steps if it makes sense.
+                5.  **Ignore Irrelevant Steps**: If a user's completed step is completely unrelated to the '{skill}' roadmap (e.g., 'Learn to Bake Bread' for a 'Data Scientist' roadmap), you must ignore it and not include it in the output.
+                6.  **Follow All Other Rules**: Adhere to all previous rules regarding a creative title, detailed description, salary, a comprehensive list of tags, and granular, specific steps.
             ";
         }
     }

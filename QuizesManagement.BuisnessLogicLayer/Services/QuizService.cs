@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using QuizesManagement.BuisnessLogicLayer.Filters;
 using QuizesManagement.BuisnessLogicLayer.Models;
 using QuizesManagement.DataAccessLayer.Interfaces;
 using QuizesManagement.DataAccessLayer.Models;
@@ -43,25 +44,29 @@ namespace QuizesManagement.BuisnessLogicLayer.Services
             return quizDto;
         }
 
-        public async Task<List<QuizDto>> GetAll()
+        public async Task<List<QuizDto>> GetAll(QuizFilter filter, List<string> finishedQuizzes)
         {
-            var quizes = await _quizRepository.GetAll();
+            var quizzesFromDb = await _quizRepository.GetAll(filter.Tags, finishedQuizzes, filter.PageNumber, filter.PageSize);
+            var quizDtos = new List<QuizDto>();
 
-            return _mapper.Map<List<QuizDto>>(quizes);
-        }
-
-        /*public async Task<QuizDto> GetById(string id)
-        {
-            var quiz = await _quizRepository.GetById(id);
-            if (quiz is null)
+            foreach (var quiz in quizzesFromDb)
             {
-                throw new Exception("Quiz not found.");
+                if (quiz is MultipleChoicesQuiz mcq)
+                {
+                    quizDtos.Add(_mapper.Map<MultipleChoicesQuizDto>(mcq));
+                }
+                else if (quiz is TrueOrFalseQuiz tfq)
+                {
+                    quizDtos.Add(_mapper.Map<TrueOrFalseQuizDto>(tfq));
+                }
+                else
+                {
+                    quizDtos.Add(_mapper.Map<QuizDto>(quiz));
+                }
             }
 
-            QuizDto quizDto = _mapper.Map<QuizDto>(quiz);
-
-            return quizDto;
-        }*/
+            return quizDtos;
+        }
     }
     
 }

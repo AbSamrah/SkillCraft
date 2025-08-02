@@ -1,4 +1,5 @@
-﻿using QuizesManagement.BuisnessLogicLayer.Models;
+﻿using QuizesManagement.BuisnessLogicLayer.Filters;
+using QuizesManagement.BuisnessLogicLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace QuizesManagement.BuisnessLogicLayer.Services
 {
     public interface IQuizService
     {
-        public Task<List<QuizDto>> GetAll();
+        public Task<List<QuizDto>> GetAll(QuizFilter filter, List<string> finishedQuizzes);
 
         public Task<QuizDto> Delete(string id);
 

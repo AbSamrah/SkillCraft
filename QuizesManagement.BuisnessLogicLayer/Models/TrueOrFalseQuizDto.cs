@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace QuizesManagement.BuisnessLogicLayer.Models
 {
-    public class TrueOrFalseQuizDto : TrueOrFalseQuizRequest
+    public class TrueOrFalseQuizDto : QuizDto
     {
-        public string Id { get; set; }
+        public bool? Answer { get; set; }
+
     }
 }

@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProfilesManagement.BuisnessLogicLayer.Services;
+using QuizesManagement.BuisnessLogicLayer.Filters;
 using QuizesManagement.BuisnessLogicLayer.Models;
 using QuizesManagement.BuisnessLogicLayer.Services;
+using QuizesManagement.DataAccessLayer.Models;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -14,26 +18,32 @@ namespace Api.Controllers
         private readonly ITrueOrFalseQuizService _tfqService;
         private readonly IQuizService _quizService;
         private readonly IStrategyFactory _strategyFactory;
+        private readonly IProfileService _profileService;
 
         public QuizzesController(
             IMultipleChoisesQuizService mcqService,
             ITrueOrFalseQuizService tfqService,
             IQuizService quizService,
-            IStrategyFactory strategyFactory)
+            IStrategyFactory strategyFactory,
+            IProfileService profileService)
         {
             _mcqService = mcqService;
             _tfqService = tfqService;
             _quizService = quizService;
             _strategyFactory = strategyFactory;
+            _profileService = profileService;
         }
 
         #region --- General Quiz Endpoints ---
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllQuizzes()
+        public async Task<IActionResult> GetAllQuizzes([FromQuery] string userId, [FromQuery] QuizFilter filter)
         {
-            var quizzes = await _quizService.GetAll();
+            List<string> quizzesIds = new List<string>();
+            quizzesIds = await _profileService.GetAllQuizzes(userId);
+            
+            var quizzes = await _quizService.GetAll(filter, quizzesIds);
             return Ok(quizzes);
         }
 
@@ -55,12 +65,11 @@ namespace Api.Controllers
         {
             var strategy = _strategyFactory.CreateStrategy("manual");
             var quiz = await _mcqService.Add(strategy, request);
-            quiz.Answer = null;
             return CreatedAtRoute("GetMcqById", new { id = quiz.Id }, quiz);
         }
 
         [HttpPost("mcq/ai")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> AddAiMcq(AiQuizParameters parameters)
         {
             var strategy = _strategyFactory.CreateStrategy("ai");
@@ -74,15 +83,22 @@ namespace Api.Controllers
         public async Task<IActionResult> GetMcqById(string id)
         {
             var quiz = await _mcqService.GetById(id);
-            quiz.Answer = null;
+            if (!User.IsInRole("Admin") && !User.IsInRole("Editor"))
+            {
+                quiz.Answer = null;
+            }
             return Ok(quiz);
         }
 
         [HttpGet("mcq/answer/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> CheckMcqAnswer([FromRoute] string id, [FromQuery] string answer)
+        public async Task<IActionResult> CheckMcqAnswer([FromRoute] string id, [FromQuery] string userId, [FromQuery] string answer)
         {
             var result = await _mcqService.CheckAnswer(id, answer);
+            if (User.IsInRole("User") && result)
+            {
+                await _profileService.AddQuiz(userId, id);
+            }
             return Ok(result);
         }
 
@@ -105,12 +121,11 @@ namespace Api.Controllers
         {
             var strategy = _strategyFactory.CreateStrategy("manual");
             var quiz = await _tfqService.Add(strategy, request);
-            quiz.Answer = null;
             return CreatedAtRoute("GetTfqById", new { id = quiz.Id }, quiz);
         }
 
         [HttpPost("tfq/ai")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> AddAiTfq(AiQuizParameters parameters)
         {
             var strategy = _strategyFactory.CreateStrategy("ai");
@@ -124,15 +139,23 @@ namespace Api.Controllers
         public async Task<IActionResult> GetTfqById(string id)
         {
             var quiz = await _tfqService.GetById(id);
-            quiz.Answer = null;
+            if (!User.IsInRole("Admin") && !User.IsInRole("Editor"))
+            {
+                quiz.Answer = null;
+            }
             return Ok(quiz);
         }
 
         [HttpGet("tfq/answer/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> CheckTfqAnswer([FromRoute] string id, [FromQuery] bool answer)
+        public async Task<IActionResult> CheckTfqAnswer([FromRoute] string id, [FromQuery] string userId, [FromQuery] bool answer)
         {
             var result = await _tfqService.CheckAnswer(id, answer);
+            if (User.IsInRole("User") && result)
+            {
+                await _profileService.AddQuiz(userId, id);
+            }
+
             return Ok(result);
         }
 

@@ -12,5 +12,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Models
         [Required]
         [MinLength(2)]
         public string Prompt { get; set; }
+        public List<StepDto> CompletedSteps { get; set; } = new List<StepDto>();
     }
 }

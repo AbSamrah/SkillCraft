@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProfilesManagement.BuisnessLogicLayer.Services;
+using QuizesManagement.DataAccessLayer.Models;
 using RoadmapMangement.BuisnessLogicLayer.Filters;
 using RoadmapMangement.BuisnessLogicLayer.Models;
 using RoadmapMangement.BuisnessLogicLayer.Services;
@@ -15,11 +17,14 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
     {
         private readonly IRoadmapsService _roadmapsService;
         private readonly IStrategyFactory _strategyFactory;
-
-        public RoadmapsController(IRoadmapsService roadmapsService, IStrategyFactory strategyFactory)
+        private readonly IProfileService _profileService;
+        private readonly StepsService _stepsService;
+        public RoadmapsController(IRoadmapsService roadmapsService, IStrategyFactory strategyFactory, IProfileService profileService, StepsService stepsService)
         {
             _roadmapsService = roadmapsService;
             _strategyFactory = strategyFactory;
+            _profileService = profileService;
+            _stepsService = stepsService;
         }
 
         [HttpGet]
@@ -40,8 +45,18 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
         }
 
         [HttpPost("ai")]
-        public async Task<IActionResult> AddAiAsync([FromBody] AiRoadmapParameters aiParams)
+        [Authorize]
+        public async Task<IActionResult> AddAiAsync([FromBody] PromptParameter parameter)
         {
+            AiRoadmapParameters aiParams = new AiRoadmapParameters();
+            aiParams.Prompt = parameter.prompt;
+            List<string> stepsIds = new List<string>();
+            if (!User.IsInRole("Admin") && !User.IsInRole("Editor"))
+            {
+                stepsIds = await _profileService.GetAllSteps(parameter.userId);
+            }
+            var steps = await _stepsService.GetMany(stepsIds);
+            aiParams.CompletedSteps = [.. steps];
             var strategy = _strategyFactory.CreateStrategy("ai");
             var roadmap = await _roadmapsService.Add(strategy, aiParams);
             return CreatedAtRoute("GetRoadmapAsync", new { id = roadmap.Id }, roadmap);

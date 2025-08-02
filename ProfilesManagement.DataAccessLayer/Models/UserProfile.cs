@@ -22,7 +22,11 @@ namespace ProfilesManagement.DataAccessLayer.Models
 
         [BsonElement("roadmaps")]
         public List<RoadmapStatus> Roadmaps { get; set; } = new List<RoadmapStatus>();
+
         [BsonElement("steps")]
         public List<string> FinishedSteps { get; set; } = new List<string>();
+
+        [BsonElement("quizzes")]
+        public List<string> Quizzes { get; set; }
     }
 }

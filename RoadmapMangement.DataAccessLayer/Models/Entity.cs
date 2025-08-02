@@ -15,9 +15,9 @@ namespace RoadmapMangement.DataAccessLayer.Models
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
         [BsonElement("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [BsonElement("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

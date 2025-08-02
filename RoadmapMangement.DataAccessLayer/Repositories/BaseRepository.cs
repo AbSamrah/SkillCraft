@@ -36,6 +36,20 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
             _context.AddCommand(() => _dbSet.InsertOneAsync(entity));
         }
 
+        public virtual async Task<List<TEntity>> GetByIds(List<string> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return new List<TEntity>();
+            }
+            var objectIds = ids.Select(id => new ObjectId(id)).ToList();
+
+            var filter = Builders<TEntity>.Filter.In("_id", objectIds);
+            var data = await _dbSet.FindAsync(filter);
+
+            return await data.ToListAsync();
+        }
+
         public virtual async Task<TEntity> GetById(string id)
         {
             if (!ObjectId.TryParse(id, out var objectId))
@@ -62,7 +76,7 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
                                .ToListAsync();
         }
 
-        public virtual async Task Update(TEntity entity)
+        public virtual void Update(TEntity entity)
         {
             if (!ObjectId.TryParse(entity.Id, out var objectId))
             {

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace RoadmapMangement.BuisnessLogicLayer.Models
 {
-    public class UpdateRoadmapRequest: RoadmapRequest
+    public class PromptParameter
     {
-        public List<string> MilestonesIds { get; set; } = new List<string>();
-        public bool IsActive { get; internal set; }
+        public string userId {  get; set; }
+        public string prompt { get; set; }
     }
 }

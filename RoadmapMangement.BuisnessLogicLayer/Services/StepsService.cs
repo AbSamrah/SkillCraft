@@ -45,6 +45,13 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             return stepDto;
         }
 
+        public async Task<List<StepDto>> GetMany(List<string> ids)
+        {
+            var steps = await _stepsRepository.GetByIds(ids);
+
+            return _mapper.Map<List<StepDto>>(steps);
+        }
+
         public async Task<StepDto> Get(string id)
         {
             var step = await _stepsRepository.GetById(id);
@@ -73,7 +80,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             foreach (var milestone in milestonesToUpdate)
             {
                 milestone.StepsIds.Remove(id);
-                await _milestoneRepository.Update(milestone);
+                _milestoneRepository.Update(milestone);
             }
 
             await _uow.Commit();
@@ -93,7 +100,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             existingStep.Name = updateStepRequest.Name;
             existingStep.DurationInMinutes = updateStepRequest.DurationInMinutes;
 
-            await _stepsRepository.Update(existingStep);
+            _stepsRepository.Update(existingStep);
             await _uow.Commit();
 
             StepDto stepDto = _mapper.Map<StepDto>(existingStep);

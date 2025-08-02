@@ -3,9 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace RoadmapMangement.BuisnessLogicLayer.Models
 {
-    /// <summary>
-    /// Represents the structured JSON object we expect from the AI when generating a roadmap.
-    /// </summary>
     public class AiGeneratedRoadmap
     {
         [JsonPropertyName("title")]
@@ -49,5 +46,11 @@ namespace RoadmapMangement.BuisnessLogicLayer.Models
 
         [JsonPropertyName("durationInMinutes")]
         public int DurationInMinutes { get; set; }
+
+        [JsonPropertyName("isCompleted")]
+        public bool IsCompleted { get; set; }
+
+        [JsonPropertyName("originalId")]
+        public string OriginalId { get; set; }
     }
 }

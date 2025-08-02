@@ -74,7 +74,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             foreach (var roadmap in roadmapsToUpdate)
             {
                 roadmap.MilestonesIds.Remove(id);
-                await _roadmapRepository.Update(roadmap);
+                _roadmapRepository.Update(roadmap);
             }
 
             await _uow.Commit();
@@ -100,7 +100,7 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
                 existingMilestone.StepsIds.Add(step);
             }
 
-            await _milestonesRepository.Update(existingMilestone);
+            _milestonesRepository.Update(existingMilestone);
             await _uow.Commit();
 
             MilestoneDto milestoneDto = _mapper.Map<MilestoneDto>(existingMilestone);
