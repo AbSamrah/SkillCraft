@@ -1,141 +1,120 @@
 # SkillCraft: An AI-Powered Learning Guide
-SkillCraft is a modern, full-stack application designed to be a personal guide for mastering new skills. It provides users with structured, interactive learning paths called "Roadmaps." Built with a powerful .NET backend and a dynamic React frontend, SkillCraft uses a role-based architecture and integrates AI to automate and enhance content creation, offering a robust and scalable system for both learners and content creators.
 
-Features
-For Learners (Users)
-Browse & Follow Roadmaps: Discover and follow expert-curated learning paths on a variety of topics.
+![.NET](https://img.shields.io/badge/.NET-8.0-blueviolet)
+![C#](https://img.shields.io/badge/C%23-12.0-green)
+![Entity%20Framework%20Core](https://img.shields.io/badge/EF%20Core-8.0-blue)
+![Architecture](https://img.shields.io/badge/Architecture-Clean-red)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-Interactive Progress Tracking: Mark steps as complete and visually track your progress through a roadmap with dynamic completion percentages and time tracking.
 
-Personal Profile: Add and remove roadmaps from your personal profile to manage your learning journey.
+SkillCraft is a modern, full-stack application designed to be a personal guide for mastering new skills. It provides users with structured, interactive learning paths called "Roadmaps." Built with a powerful .NET backend and a dynamic React frontend, SkillCraft uses a role-based architecture and integrates AI to automate and enhance content creation.
 
-Interactive Quizzes: Test your knowledge with two types of quizzes (Multiple Choice and True/False) and get immediate feedback.
+**Frontend Repository:** [**AbSamrah/skillcraft-frontend**](https://github.com/AbSamrah/skillcraft-frontend)
 
-AI-Powered Generation: Generate personalized roadmaps and quizzes on any topic using AI.
+## About The Project
 
-For Editors & Admins
-Full Content Management: A comprehensive dashboard for full CRUD (Create, Read, Update, Delete) operations on Roadmaps, Milestones, Steps, and Quizzes.
+This project is a comprehensive learning platform built on a clean, modular architecture to ensure maintainability and scalability. The API exposes a set of well-defined endpoints to support a decoupled frontend application, creating a robust system for both learners and content creators.
 
-Advanced Filtering & Pagination: Easily search and navigate through large amounts of content with built-in search bars and pagination for all content types.
+The core functionalities include:
+* **Structured Learning:** A complete system for creating and managing learning "Roadmaps" composed of milestones and steps.
+* **AI-Powered Content Generation:** Integrates with the Gemini API to automatically generate entire roadmaps and quizzes based on a single topic.
+* **Interactive Knowledge Checks:** A module for creating and taking two types of quizzes (Multiple Choice and True/False) to test user knowledge.
+* **Personalized User Profiles:** Allows users to track their progress, save roadmaps, and manage their learning journey.
 
-For Admins
-User Management: A dedicated dashboard to create, view, edit, and delete users.
+## Key Features
 
-Role Management: Assign roles (User, Editor, Admin) to users to manage permissions across the application.
+-   **RESTful API:** A well-structured set of endpoints for all application features.
+-   **User Authentication:** Secure user registration and login system using JWT (JSON Web Tokens).
+-   **Role-Based Access Control:**
+    -   **Learner (User):** Can browse content, follow roadmaps, track progress, take quizzes, and generate content using AI.
+    -   **Editor:** Can perform all Learner actions, plus has full CRUD (Create, Read, Update, Delete) access to all educational content.
+    -   **Admin:** Has full access, including all Editor permissions plus user and role management.
+-   **Advanced Content:** Filtering: All content lists in the editor dashboard are searchable and paginated.
+-   **Dynamic Frontend:** A responsive React SPA with a dark theme, providing a seamless user experience.
 
-Architecture & Design Patterns
-SkillCraft is built on a foundation of modern software architecture principles to ensure it is scalable, maintainable, and robust.
+## Technology Stack & Architecture
 
-1. High-Level Architecture: Client-Server
-The application follows a classic Client-Server Architecture, which separates the user interface from the business logic and data storage.
+* **High-Level Architecture:** Client-Server
+* The application follows a classic Client-Server Architecture.
 
-Client (React): A Single Page Application (SPA) that runs entirely in the user's browser, responsible for all user interactions and views.
+**Client (React):** A Single Page Application (SPA) that runs in the user's browser.
 
-Server (.NET): A centralized backend that handles business logic, data persistence, and security. The client communicates with the server via a RESTful API over HTTPS.
+**Server (.NET):** A centralized backend that handles business logic, data persistence, and security.
 
-2. Backend Architecture: Modular Monolith
-The backend is designed as a Modular Monolith. While it's deployed as a single application, it is internally divided into distinct, loosely coupled modules, each with a specific business responsibility. This approach combines the simplicity of a monolithic deployment with the organizational benefits of microservices.
+## Backend Architecture: Modular Monolith
+The backend is designed as a Modular Monolith, divided internally into distinct modules:
+* **Users Management:** Handles authentication, authorization, and user data.
+* **Roadmap Management:** Manages the creation and structure of learning roadmaps.
+* **Quizzes Management:** Manages all types of quizzes and their content.
+* **Profiles Management:** Manages user-specific data, like their progress and saved roadmaps.
 
-The core modules are:
+## Database Architecture: Hybrid Model
+* **SQL Server:** Used for the Users Management module (via Entity Framework Core).
+* **MongoDB:** Used for the Roadmap, Quizzes, and Profiles modules.
 
-Users Management: Handles authentication, authorization, and user data.
+## Key Design Patterns
+* **Repository & Unit of Work Pattern:** Used in the Data Access Layer to abstract database logic.
+* **Strategy Pattern:** Used for content creation, allowing for both Manual and AI creation strategies.
 
-Roadmap Management: Manages the creation and structure of learning roadmaps.
-
-Quizzes Management: Manages all types of quizzes and their content.
-
-Profiles Management: Manages user-specific data, like their progress and saved roadmaps.
-
-3. Database Architecture: Hybrid Model
-To best suit the different types of data, SkillCraft uses a hybrid database approach:
-
-SQL Server: Used for the Users Management module. Its relational structure is ideal for storing user accounts and roles, where data integrity and well-defined relationships are critical.
-
-MongoDB: Used for the Roadmap, Quizzes, and Profiles modules. Its flexible, document-based structure is perfect for handling the hierarchical and evolving nature of educational content and user profiles.
-
-4. Key Design Patterns
-Repository & Unit of Work Pattern: Used in the Data Access Layer to abstract the database logic from the business logic. Repositories handle the queries for each entity, and the Unit of Work manages transactions to ensure data consistency.
-
-Strategy Pattern: Used for content creation. The system has an IRoadmapCreationStrategy and an IQuizCreationStrategy, with different implementations for Manual and AI creation. This makes the system easily extensible—new creation methods (e.g., from a different AI model) can be added without changing the core services.
-
-Tech Stack
-Backend (.NET)
-Framework: ASP.NET Core
-
-Authentication: JSON Web Tokens (JWT)
-
-Databases: Entity Framework Core with SQL Server, and the official MongoDB Driver.
-
-AI Integration: Gemini API
-
-Testing: xUnit, Moq, Testcontainers
-
-Frontend (React)
-Framework: React (functional components and hooks)
-
-Routing: React Router DOM
-
-API Communication: Axios with JWT interceptors
-
-State Management: React Context API (AuthContext, ThemeContext)
-
-Styling: Bootstrap & Sass, with a dynamic Dark Theme.
-
-Testing: Jest, React Testing Library
-
-Getting Started
-To get a local copy up and running, follow these simple steps.
+## Getting Started
+To get a local copy up and running, follow these steps.
 
 Prerequisites
-.NET 8 SDK or later
+.NET 8.0 SDK
 
 Node.js and npm
 
-An IDE like Visual Studio or VS Code
+Microsoft SQL Server
 
-Access to a SQL Server instance
+MongoDB
 
-Access to a MongoDB instance
+A code editor like Visual Studio or VS Code
 
-Backend Setup
-Clone the backend repository:
+Installation
+Clone the Repositories
 
+# Clone the backend
 git clone [YOUR_BACKEND_REPO_URL]
-cd [backend-folder]
 
-Configure your connection strings:
+# Clone the frontend
+git clone [YOUR_FRONTEND_REPO_URL]
 
-Open appsettings.Development.json.
+Configure Backend Secrets
+It's recommended to use the .NET Secret Manager for your connection strings and API keys.
 
-Update the DefaultConnection string to point to your SQL Server instance.
+Navigate to the SkillCraft.Api project directory and set up your secrets:
 
-Update the MongoDbConnection string to point to your MongoDB instance.
+dotnet user-secrets init
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Your_SQL_Server_Connection_String"
+dotnet user-secrets set "MongoDbConnection:ConnectionString" "Your_MongoDB_Connection_String"
+dotnet user-secrets set "MongoDbConnection:DatabaseName" "SkillCraftDb"
+dotnet user-secrets set "Jwt:Key" "Your_Super_Secret_JWT_Key"
+dotnet user-secrets set "Jwt:Issuer" "Your_Issuer"
 
-Update the database:
+Alternatively, you can add these values to your appsettings.Development.json file.
 
-Run dotnet ef database update in the terminal to apply the Entity Framework migrations for the SQL database.
+Setup the Databases
+Navigate to the DataAccessLayer project directory and run the following command to apply migrations for the identity database:
 
-Run the backend server:
+# Apply migrations for the identity database
+dotnet ef database update
+
+The application will automatically seed the databases with initial data for roles on the first run.
+
+Run the Backend API
+Navigate back to the SkillCraft.Api project directory and run the application:
 
 dotnet run
 
-The API will be running on http://localhost:5093.
+The API will be available at http://localhost:5093 by default.
 
-Frontend Setup
-Clone the frontend repository:
+Setup and Run the Frontend
+Navigate to your frontend project directory and run:
 
-git clone [YOUR_FRONTEND_REPO_URL]
-cd [frontend-folder]
-
-Install NPM packages:
-
+# Install dependencies
 npm install
 
-Run the frontend application:
-
+# Run the application
 npm start
 
 The application will open in your browser at http://localhost:3000.
-
-About the Project
-SkillCraft was developed as a comprehensive solution for self-guided learning, focusing on a clean, maintainable codebase and a rich, interactive user experience. The choice of a Modular Monolith architecture for the backend allows for organized, domain-driven development while maintaining the simplicity of a single deployment pipeline. The integration of AI for content generation aims to reduce the effort for content creators and provide a unique, dynamic experience for learners.
