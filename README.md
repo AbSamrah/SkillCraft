@@ -11,16 +11,12 @@ Personal Profile: Add and remove roadmaps from your personal profile to manage y
 
 Interactive Quizzes: Test your knowledge with two types of quizzes (Multiple Choice and True/False) and get immediate feedback.
 
+AI-Powered Generation: Generate personalized roadmaps and quizzes on any topic using AI.
+
 For Editors & Admins
-Full Content Management: A comprehensive dashboard for full CRUD (Create, Read, Read, Update, Delete) operations on Roadmaps, Milestones, Steps, and Quizzes.
+Full Content Management: A comprehensive dashboard for full CRUD (Create, Read, Update, Delete) operations on Roadmaps, Milestones, Steps, and Quizzes.
 
-AI-Powered Content Generation:
-
-AI Roadmap Generator: Instantly create a complete roadmap structure with milestones and steps by simply providing a topic.
-
-AI Quiz Generator: Generate both Multiple Choice and True/False quizzes on any topic with varying difficulty levels.
-
-Advanced Filtering & Pagination: Easily search and navigate through large amounts of content with built-in search bars and pagination.
+Advanced Filtering & Pagination: Easily search and navigate through large amounts of content with built-in search bars and pagination for all content types.
 
 For Admins
 User Management: A dedicated dashboard to create, view, edit, and delete users.
@@ -72,6 +68,8 @@ Databases: Entity Framework Core with SQL Server, and the official MongoDB Drive
 
 AI Integration: Gemini API
 
+Testing: xUnit, Moq, Testcontainers
+
 Frontend (React)
 Framework: React (functional components and hooks)
 
@@ -79,9 +77,11 @@ Routing: React Router DOM
 
 API Communication: Axios with JWT interceptors
 
-State Management: React Context API (AuthContext)
+State Management: React Context API (AuthContext, ThemeContext)
 
 Styling: Bootstrap & Sass, with a dynamic Dark Theme.
+
+Testing: Jest, React Testing Library
 
 Getting Started
 To get a local copy up and running, follow these simple steps.
@@ -105,7 +105,7 @@ cd [backend-folder]
 
 Configure your connection strings:
 
-Open appsettings.json.
+Open appsettings.Development.json.
 
 Update the DefaultConnection string to point to your SQL Server instance.
 
@@ -136,3 +136,6 @@ Run the frontend application:
 npm start
 
 The application will open in your browser at http://localhost:3000.
+
+About the Project
+SkillCraft was developed as a comprehensive solution for self-guided learning, focusing on a clean, maintainable codebase and a rich, interactive user experience. The choice of a Modular Monolith architecture for the backend allows for organized, domain-driven development while maintaining the simplicity of a single deployment pipeline. The integration of AI for content generation aims to reduce the effort for content creators and provide a unique, dynamic experience for learners.
