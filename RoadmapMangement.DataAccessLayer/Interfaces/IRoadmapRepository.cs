@@ -9,6 +9,5 @@ namespace RoadmapMangement.DataAccessLayer.Interfaces
 {
     public interface IRoadmapRepository : IRepository<Roadmap>
     {
-        Task<List<Roadmap>> GetActiveRoadmaps();
     }
 }

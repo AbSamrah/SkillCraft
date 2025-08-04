@@ -16,14 +16,6 @@ namespace RoadmapMangement.DataAccessLayer.Repositories
         {
         }
 
-        public async Task<List<Roadmap>> GetActiveRoadmaps()
-        {
-            var filter = Builders<Roadmap>.Filter.Eq(x => x.IsActive, true);
-            var result = await _dbSet.FindAsync(filter);
-            return await result.ToListAsync();
-        }
-
-
         public override async Task<Roadmap> GetById(string roadmapId)
         {
             var roadmap = await _dbSet.Find(r => r.Id == roadmapId).FirstOrDefaultAsync();

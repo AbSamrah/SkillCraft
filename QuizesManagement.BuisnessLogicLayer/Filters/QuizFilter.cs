@@ -8,6 +8,7 @@ namespace QuizesManagement.BuisnessLogicLayer.Filters
 {
     public class QuizFilter
     {
+        public string? Name { get; set; }
         public List<string> Tags { get; set; } = new List<string>();
         public int PageNumber { get; set; } = 0;
         public int PageSize { get; set; } = 10;

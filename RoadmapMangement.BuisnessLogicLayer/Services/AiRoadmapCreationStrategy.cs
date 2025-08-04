@@ -51,7 +51,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
             {
                 Name = generatedRoadmap.Title,
                 Description = generatedRoadmap.Description,
-                IsActive = true,
                 Tags = generatedRoadmap.Tags,
                 Salary = generatedRoadmap.AverageSalary
             };
@@ -62,15 +61,12 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
 
                 foreach (var stepData in milestoneData.Steps)
                 {
-                    // ** This is the new, smarter logic **
                     if (stepData.IsCompleted && !string.IsNullOrEmpty(stepData.OriginalId))
                     {
-                        // If the step is marked as completed, just link the existing step ID.
                         milestone.StepsIds.Add(stepData.OriginalId);
                     }
                     else
                     {
-                        // Otherwise, create a new step as before.
                         var newStep = new Step { Name = stepData.Title, Description = stepData.Description, DurationInMinutes = stepData.DurationInMinutes };
                         _stepRepository.Add(newStep);
                         milestone.StepsIds.Add(newStep.Id);
@@ -80,14 +76,12 @@ namespace RoadmapMangement.BuisnessLogicLayer.Services
                 roadmap.MilestonesIds.Add(milestone.Id);
             }
 
-            // Commit only the NEW steps and milestones
             await _uow.Commit();
             return roadmap;
         }
 
         private string ConstructPrompt(string skill, List<StepDto> completedSteps)
         {
-            // Convert the list of completed steps into a simple string format for the prompt.
             var completedStepsText = completedSteps.Any()
                 ? string.Join(", ", completedSteps.Select(s => $"{{ \"id\": \"{s.Id}\", \"name\": \"{s.Name}\" }}"))
                 : "None";

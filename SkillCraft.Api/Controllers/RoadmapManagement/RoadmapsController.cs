@@ -48,12 +48,13 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
         [Authorize]
         public async Task<IActionResult> AddAiAsync([FromBody] PromptParameter parameter)
         {
+            var userId = User.FindFirst("id")?.Value;
             AiRoadmapParameters aiParams = new AiRoadmapParameters();
             aiParams.Prompt = parameter.prompt;
             List<string> stepsIds = new List<string>();
             if (!User.IsInRole("Admin") && !User.IsInRole("Editor"))
             {
-                stepsIds = await _profileService.GetAllSteps(parameter.userId);
+                stepsIds = await _profileService.GetAllSteps(userId);
             }
             var steps = await _stepsService.GetMany(stepsIds);
             aiParams.CompletedSteps = [.. steps];

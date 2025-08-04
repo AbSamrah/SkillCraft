@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoadmapMangement.BuisnessLogicLayer.Filters;
 using RoadmapMangement.BuisnessLogicLayer.Models;
@@ -8,6 +9,7 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Editor")]
     public class MilestonesController : ControllerBase
     {
         private readonly MilestonesService _milestonesService;

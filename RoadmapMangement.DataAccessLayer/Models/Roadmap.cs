@@ -24,9 +24,6 @@ namespace RoadmapMangement.DataAccessLayer.Models
         [BsonElement("salary")]
         public decimal Salary { get; set; }
 
-        [BsonElement("isActive")]
-        public bool IsActive { get; set; } = true;
-
         [BsonIgnore]
         public int DurationInMinutes { get; set; }
     }

@@ -8,7 +8,6 @@ namespace RoadmapMangement.BuisnessLogicLayer.Models
 {
     public class PromptParameter
     {
-        public string userId {  get; set; }
         public string prompt { get; set; }
     }
 }

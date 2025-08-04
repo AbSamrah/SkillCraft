@@ -51,23 +51,42 @@ namespace QuizesManagement.DataAccessLayer.Repositories
 
             return entity;
         }
-        
 
-        public virtual async Task<List<Quiz>> GetAll(List<string> tags, int pageNumber = 0, int pageSize = 9)
+
+        public async Task<List<Quiz>> GetAll(List<string> tags, string Name = "", int pageNumber = 0, int pageSize = 9, List<string> excludedIds = null)
         {
+            var filterBuilder = Builders<Quiz>.Filter;
+            var filterDefinitions = new List<FilterDefinition<Quiz>>();
 
-            var filter = tags.Count() == 0
-                ? Builders<Quiz>.Filter.Empty
-                : Builders<Quiz>.Filter.Where(q => q.Tags.Any(t => tags.Contains(t)));
+            if (!string.IsNullOrEmpty(Name))
+            {
+                filterDefinitions.Add(filterBuilder.Regex(q => q.Question, new BsonRegularExpression(Name, "i")));
+            }
 
-            return await _dbSet.Find(filter)
+            if (tags != null && tags.Any())
+            {
+                filterDefinitions.Add(filterBuilder.AnyIn(q => q.Tags, tags));
+            }
+
+            if (excludedIds != null && excludedIds.Any())
+            {
+                var objectIdList = excludedIds.Select(id => ObjectId.Parse(id)).ToList();
+                filterDefinitions.Add(filterBuilder.Nin("_id", objectIdList));
+            }
+
+            var finalFilter = filterDefinitions.Any()
+                ? filterBuilder.And(filterDefinitions)
+                : filterBuilder.Empty;
+
+            return await _dbSet.Find(finalFilter)
                                 .Skip(pageNumber * pageSize)
                                 .Limit(pageSize)
                                 .ToListAsync();
-            
         }
 
-       
+
+
+
 
         public virtual void Remove(string id)
         {

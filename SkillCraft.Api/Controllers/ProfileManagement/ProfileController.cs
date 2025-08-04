@@ -22,23 +22,27 @@ namespace SkillCraft.Api.Controllers.ProfileManagement
             _profileService = profileService;
             _roadmapsService = roadmapsService;
         }
-        [HttpGet("{userId}/AllRoadmaps")]
-        public async Task<IActionResult> GetProfileRoadmaps(string userId)
+        [HttpGet("MyRoadmaps")]
+        public async Task<IActionResult> GetProfileRoadmaps()
         {
+            var userId = User.FindFirst("id")?.Value;
             var roadmaps = await _profileService.GetAllRoadmaps(userId);
+            
             return Ok(roadmaps);
         }
 
-        [HttpGet("{userId}/Roadmaps")]
-        public async Task<IActionResult> GetRoadmaps(string userId, [FromQuery] bool finished)
+        [HttpGet("FinishedRoadmaps")]
+        public async Task<IActionResult> GetRoadmaps([FromQuery] bool finished)
         {
+            var userId = User.FindFirst("id")?.Value;
             var roadmaps = await _profileService.GetRoadmaps(userId, finished);
             return Ok(roadmaps);
         }
 
-        [HttpGet("{userId}/FinishedSteps/{roadmapId}")]
-        public async Task<IActionResult> GetFinishedSteps(string userId, string roadmapId)
+        [HttpGet("FinishedSteps/{roadmapId}")]
+        public async Task<IActionResult> GetFinishedSteps(string roadmapId)
         {
+            var userId = User.FindFirst("id")?.Value;
             var roadmap = await _roadmapsService.Get(roadmapId);
             var milestones = roadmap.Milestones;
             var stepsIds = new List<string>();
@@ -53,47 +57,50 @@ namespace SkillCraft.Api.Controllers.ProfileManagement
             return Ok(finishedSteps);
         }
 
-        [HttpPut("{userId}/FinishSteps")]
-        public async Task<IActionResult> FinishSteps(string userId, List<string> stepsIds)
+        [HttpPut("FinishSteps")]
+        public async Task<IActionResult> FinishSteps(List<string> stepsIds)
         {
+            var userId = User.FindFirst("id")?.Value;
             await _profileService.FinishSteps(userId, stepsIds);
             return Ok();
         }
 
-        [HttpPut("{userId}/UnFinishSteps")]
-        public async Task<IActionResult> UnFinishSteps(string userId, List<string> stepsIds)
+        [HttpPut("UnFinishSteps")]
+        public async Task<IActionResult> UnFinishSteps(List<string> stepsIds)
         {
+            var userId = User.FindFirst("id")?.Value;
             await _profileService.UnFinishSteps(userId, stepsIds);
             return Ok();
         }
 
-        [HttpPut("{userId}/Roadmaps/{roadmapId}")]
-        public async Task<IActionResult> ChangeRoadmapStatus(string userId, string roadmapId, bool finish = true)
+        [HttpPut("Roadmaps/{roadmapId}")]
+        public async Task<IActionResult> ChangeRoadmapStatus(string roadmapId, bool finish = true)
         {
+            var userId = User.FindFirst("id")?.Value;
             await _profileService.ChangeRoadmapStatus(userId, roadmapId, finish);
             return Ok();
         }
 
-        [HttpPut("{userId}/AddRoadmap/{roadmapId}")]
-        public async Task<IActionResult> AddRoadmap(string userId, string roadmapId)
+        [HttpPut("AddRoadmap/{roadmapId}")]
+        public async Task<IActionResult> AddRoadmap(string roadmapId)
         {
+            var userId = User.FindFirst("id")?.Value;
             await _profileService.AddRoadmap(userId, roadmapId);
             return Ok();
         }
 
-        [HttpPut("{userId}/RemoveRoadmap/{roadmapId}")]
-        public async Task<IActionResult> RemoveRoadmap(string userId, string roadmapId)
+        [HttpPut("RemoveRoadmap/{roadmapId}")]
+        public async Task<IActionResult> RemoveRoadmap(string roadmapId)
         {
+            var userId = User.FindFirst("id")?.Value;
             await _profileService.RemoveRoadmap(userId, roadmapId);
             return Ok();
         }
 
-         
-
-
-        [HttpGet("{userId}/CheckRoadmap/{roadmapId}")]
-        public async Task<IActionResult> CheckRoadmap(string userId, string roadmapId)
+        [HttpGet("CheckRoadmap/{roadmapId}")]
+        public async Task<IActionResult> CheckRoadmap(string roadmapId)
         {
+            var userId = User.FindFirst("id")?.Value;
             var result = await _profileService.CheckRoadmap(userId, roadmapId);
             return Ok(result);
         }
