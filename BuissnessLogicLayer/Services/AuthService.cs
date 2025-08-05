@@ -30,7 +30,7 @@ namespace BuissnessLogicLayer.Services
         {
             if(await _userRepository.UserExistsAsync(userSignUp.Email))
             {
-                throw new Exception("Email already exists.");
+                throw new KeyNotFoundException("Email already exists.");
             }
 
             User user = new User();
@@ -53,7 +53,7 @@ namespace BuissnessLogicLayer.Services
         {
             if (!await _userRepository.UserExistsAsync(userLogin.Email))
             {
-                throw new Exception("User not found.");
+                throw new KeyNotFoundException("User not found.");
             }
 
             User user = await _userRepository.GetByEmailAsync(userLogin.Email);
@@ -63,7 +63,7 @@ namespace BuissnessLogicLayer.Services
             }
             else
             {
-                throw new Exception("Password is incorrect.");
+                throw new ArgumentException("Password is incorrect.");
             }
         }
 
@@ -72,7 +72,7 @@ namespace BuissnessLogicLayer.Services
             var user = await _userRepository.GetAsync(request.Id);
             if(user is null)
             {
-                throw new Exception("User not found.");
+                throw new KeyNotFoundException("User not found.");
             }
 
             if (_passwordHasher.Verify(request.OldPassword, user.PasswordHash))
@@ -85,7 +85,7 @@ namespace BuissnessLogicLayer.Services
             }
             else
             {
-                throw new Exception("Wrong Password.");
+                throw new ArgumentException("Password is incorrect.");
             }
 
         }

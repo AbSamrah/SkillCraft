@@ -41,7 +41,7 @@ namespace UsersManagement.BuisnessLogicLayer.Tests
             var userSignUp = new UserSignUp { Email = "test@example.com" };
             _userRepositoryMock.Setup(r => r.UserExistsAsync(userSignUp.Email)).ReturnsAsync(true);
 
-            await Assert.ThrowsAsync<Exception>(() => _authService.SignUpAsync(userSignUp));
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => _authService.SignUpAsync(userSignUp));
         }
 
         [Fact]
@@ -86,8 +86,58 @@ namespace UsersManagement.BuisnessLogicLayer.Tests
             _passwordHasherMock.Setup(h => h.Verify(userLogin.Password, existingUser.PasswordHash)).Returns(false);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() => _authService.LoginAsync(userLogin));
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _authService.LoginAsync(userLogin));
             Assert.Equal("Password is incorrect.", exception.Message);
+        }
+
+        [Fact]
+        public async Task LoginAsync_ShouldThrowException_WhenEmailDoesNotExist()
+        {
+            // Arrange
+            var userLogin = new UserLogin { Email = "notexist@example.com", Password = "hashed_correct_password" };
+            var existingUser = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = "exist@example.com",
+                PasswordHash = "hashed_correct_password"
+            };
+            // Simulate when the email does not exist
+            _userRepositoryMock.Setup(r => r.UserExistsAsync(userLogin.Email)).ReturnsAsync(false);
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => _authService.LoginAsync(userLogin));
+            Assert.Equal("User not found.", exception.Message);
+        }
+
+        [Fact]
+        public async Task LoginAsync_ShouldReturnUserDto_WhenLoginSuccess()
+        {
+            // Arrange
+            var userLogin = new UserLogin { Email = "exist@example.com", Password = "hashed_correct_password" };
+            var existingUser = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = "exist@example.com",
+                PasswordHash = "hashed_correct_password"
+            };
+            var userDto = new UserDto
+            {
+                Id = Guid.NewGuid(),
+                Email = "exist@example.com"
+            };
+
+            _userRepositoryMock.Setup(r => r.UserExistsAsync(userLogin.Email)).ReturnsAsync(true);
+            _userRepositoryMock.Setup(r => r.GetByEmailAsync(userLogin.Email)).ReturnsAsync(existingUser);
+            _mapperMock.Setup(m => m.Map<UserDto>(existingUser)).Returns(userDto);
+            // Simulate the login done successfuly
+            _passwordHasherMock.Setup(h => h.Verify(userLogin.Password, existingUser.PasswordHash)).Returns(true);
+
+            var result = await _authService.LoginAsync(userLogin);
+
+            // Act & Assert
+            Assert.NotNull(result);
+            Assert.Equal(userLogin.Email, result.Email);
+            _userRepositoryMock.Verify(r => r.GetByEmailAsync(userLogin.Email), Times.Once);
         }
     }
 }
