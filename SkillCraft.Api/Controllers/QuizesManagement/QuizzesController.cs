@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -42,11 +43,11 @@ namespace Api.Controllers
         public async Task<IActionResult> GetAllQuizzes([FromQuery] QuizFilter filter)
         {
             var excludedIds = new List<string>();
-
+            
             if (User.IsInRole("User"))
             {
                 var userId = User.FindFirst("id")?.Value;
-                excludedIds.AddRange(await _profileService.GetAllQuizzes(userId));
+                excludedIds = await _profileService.GetAllQuizzes(userId);
             }
 
             var quizzes = await _quizService.GetAll(filter, excludedIds);
@@ -78,6 +79,15 @@ namespace Api.Controllers
         [Authorize]
         public async Task<IActionResult> AddAiMcq(AiQuizParameters parameters)
         {
+            var userId = User.FindFirst("id")?.Value;
+            if (User.IsInRole("User"))
+            {
+                var hasEnoughEnergy = await _profileService.CheckAndDeductEnergy(userId, 5);
+                if (!hasEnoughEnergy)
+                {
+                    return StatusCode(429, new { Message = "Not enough energy to generate a roadmap. Please try again later." }); // 429 Too Many Requests
+                }
+            }
             var strategy = _strategyFactory.CreateStrategy("ai");
             var quiz = await _mcqService.Add(strategy, parameters);
             if (!User.IsInRole("Admin") && !User.IsInRole("Editor"))
@@ -138,6 +148,15 @@ namespace Api.Controllers
         [Authorize]
         public async Task<IActionResult> AddAiTfq(AiQuizParameters parameters)
         {
+            var userId = User.FindFirst("id")?.Value;
+            if (User.IsInRole("User"))
+            {
+                var hasEnoughEnergy = await _profileService.CheckAndDeductEnergy(userId, 5);
+                if (!hasEnoughEnergy)
+                {
+                    return StatusCode(429, new { Message = "Not enough energy to generate a roadmap. Please try again later." }); // 429 Too Many Requests
+                }
+            }
             var strategy = _strategyFactory.CreateStrategy("ai");
             var quiz = await _tfqService.Add(strategy, parameters);
             if (!User.IsInRole("Admin") && !User.IsInRole("Editor"))

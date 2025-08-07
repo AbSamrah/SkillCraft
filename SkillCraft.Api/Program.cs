@@ -25,10 +25,14 @@ using SkillCraft.Api.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UsersManagement.BuissnessLogicLayer.Models;
 using UsersManagement.BuissnessLogicLayer.Services;
+using UsersManagement.DataAccessLayer.Repositories;
+using ProfilesManagement.BuisnessLogicLayer.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddControllers()
                 .AddJsonOptions(opt =>
@@ -68,6 +72,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddHttpClient();
 
+builder.Services.AddHostedService<EnergyRefillService>();
+
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
@@ -78,6 +84,7 @@ builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IMultipleChoicesQuizRepository, MultipleChoicesQuizRepository>();
 builder.Services.AddScoped<ITrueOrFalseQuizRepository, TrueOrFalseQuizRepository>();
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IPendingUserRepository, PendingUserRepository>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<UsersService>();
@@ -90,6 +97,7 @@ builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IMultipleChoisesQuizService, MultipleChoisesQuizService>();
 builder.Services.AddScoped<ITrueOrFalseQuizService, TrueOrFlaseQuizService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 builder.Services.AddScoped<RoadmapMangement.BuisnessLogicLayer.Services.IAiGenerator, RoadmapMangement.BuisnessLogicLayer.Services.GeminiAiAdapter>();
 builder.Services.AddScoped<QuizesManagement.BuisnessLogicLayer.Services.IAiGenerator, QuizesManagement.BuisnessLogicLayer.Services.GeminiAiAdapter>();

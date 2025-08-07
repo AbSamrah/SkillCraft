@@ -6,51 +6,69 @@ using DataAccessLayer.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using UsersManagement.BuissnessLogicLayer.Services;
+using UsersManagement.DataAccessLayer.Models;
+using UsersManagement.DataAccessLayer.Repositories;
 
 namespace BuissnessLogicLayer.Services
 {
     public class AuthService
     {
-        private IUserRepository _userRepository;
-        private IPasswordHasher _passwordHasher;
-        private IRoleRepository _roleRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IPendingUserRepository _pendinguserRepository;
+        private readonly IPasswordHasher _passwordHasher;
+        private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
-        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher, IRoleRepository roleRepository, IMapper mapper)
+        public AuthService(IUserRepository userRepository, IPendingUserRepository pendingUserRepository, IPasswordHasher passwordHasher, IRoleRepository roleRepository, IMapper mapper, IEmailService emailService)
         {
             _userRepository = userRepository;
+            _pendinguserRepository = pendingUserRepository;
             _passwordHasher = passwordHasher;
             _roleRepository = roleRepository;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
-        public async Task<UserDto> SignUpAsync(UserSignUp userSignUp)
+        public async Task SignUpAsync(UserSignUp userSignUp)
         {
             if(await _userRepository.UserExistsAsync(userSignUp.Email))
             {
                 throw new KeyNotFoundException("Email already exists.");
             }
 
-            User user = new User();
+            var existingPendingUser = await _pendinguserRepository.GetPendingUserAsync(userSignUp.Email);
+            if (existingPendingUser != null)
+            {
+                await _pendinguserRepository.DeletePendingUser(existingPendingUser);
+            }
 
-            user.FirstName = userSignUp.FirstName;
-            user.LastName = userSignUp.LastName;
-            user.Email = userSignUp.Email;
-            user.PasswordHash = _passwordHasher.Hash(userSignUp.Password);
+            var pendingUser = new PendingUser
+            {
+                FirstName = userSignUp.FirstName,
+                LastName = userSignUp.LastName,
+                Email = userSignUp.Email,
+                PasswordHash = _passwordHasher.Hash(userSignUp.Password),
+                VerificationToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(64)),
+                ExpirationDate = DateTime.UtcNow.AddHours(24) 
+            };
 
-            var role = await _roleRepository.GetByTitleAsync("User");
-            user.Role = role;
-            user.RoleId = role.Id;
+            await _pendinguserRepository.AddPendingUserAsync(pendingUser);
 
-            await _userRepository.AddAsync(user);
-
-            return _mapper.Map<UserDto>(user);
+            await _emailService.SendVerificationEmailAsync(pendingUser.Email, pendingUser.VerificationToken);
         }
 
         public async Task<UserDto> LoginAsync(UserLogin userLogin)
         {
+            var isPending = await _pendinguserRepository.GetPendingUserAsync(userLogin.Email);
+            if (isPending is not null)
+            {
+                throw new Exception("Email is pending verification. Please check your inbox.");
+            }
             if (!await _userRepository.UserExistsAsync(userLogin.Email))
             {
                 throw new KeyNotFoundException("User not found.");
@@ -88,6 +106,39 @@ namespace BuissnessLogicLayer.Services
                 throw new ArgumentException("Password is incorrect.");
             }
 
+        }
+
+        public async Task<UserDto> VerifyEmailAsync(string email, string token)
+        {
+            var pendingUser = await _pendinguserRepository.GetPendingUserAsync(email, token);
+
+            if (pendingUser == null)
+            {
+                throw new Exception("Invalid verification token.");
+            }
+
+            if (pendingUser.ExpirationDate < DateTime.UtcNow)
+            {
+                await _pendinguserRepository.DeletePendingUser(pendingUser);
+                throw new Exception("Verification token has expired.");
+            }
+
+            var role = await _roleRepository.GetByTitleAsync("User");
+            var user = new User
+            {
+                FirstName = pendingUser.FirstName,
+                LastName = pendingUser.LastName,
+                Email = pendingUser.Email,
+                PasswordHash = pendingUser.PasswordHash,
+                Role = role,
+                RoleId = role.Id
+            };
+
+            await _userRepository.AddAsync(user);
+
+            await _pendinguserRepository.DeletePendingUser(pendingUser);
+
+            return _mapper.Map<UserDto>(user);
         }
     }
 }

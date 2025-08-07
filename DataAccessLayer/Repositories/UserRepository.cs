@@ -7,17 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UsersManagement.DataAccessLayer.Models;
 
 namespace DataAccessLayer.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly UsersDbContext _usersDbContext;
-        private readonly IPasswordHasher _passwordHasher;
 
-        public UserRepository(UsersDbContext usersDbContext, IPasswordHasher passwordHasher) {
+        public UserRepository(UsersDbContext usersDbContext) {
             _usersDbContext = usersDbContext;
-            _passwordHasher = passwordHasher;
         }
 
         public async Task AddAsync(User user) 
@@ -25,7 +24,6 @@ namespace DataAccessLayer.Repositories
             user.Id = Guid.NewGuid();
             await _usersDbContext.AddAsync(user);
             await _usersDbContext.SaveChangesAsync();
-            user.PasswordHash = null;
         }
 
         public async Task<User> DeleteAsync(Guid id)
@@ -113,5 +111,6 @@ namespace DataAccessLayer.Repositories
             }
             return true;
         }
+
     }
 }

@@ -27,24 +27,18 @@ namespace API.Controllers
         [Route("signUp")]
         public async Task<IActionResult> SignUpAsync(UserSignUp userSignUp)
         {
-            try
-            {
-                var user = await _authService.SignUpAsync(userSignUp);
-                await _profileService.Add(user.Id.ToString());
+            await _authService.SignUpAsync(userSignUp);
+            return Ok(new { Message = "Verification email sent. Please check your inbox to complete registration." });
+        }
 
-                var token = await _tokenService.GenerateToken(user);
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail(string email, string token)
+        {
+            var user = await _authService.VerifyEmailAsync(email, token);
+            await _profileService.Add(user.Id.ToString());
 
-                return Ok(token);
-            }
-            catch (Exception ex) when (ex.Message == "Email already exists.")
-            {
-                return Conflict(new
-                {
-                    StatusCode = StatusCodes.Status409Conflict,
-                    Message = "Email is already registered."
-                });
-            }
-
+            var jwtToken = await _tokenService.GenerateToken(user);
+            return Ok(new { Message = "Email verified successfully.", Token = jwtToken });
         }
 
         [HttpPost]

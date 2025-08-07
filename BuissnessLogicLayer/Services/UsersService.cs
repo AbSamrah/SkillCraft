@@ -14,10 +14,10 @@ namespace BuissnessLogicLayer.Services
 {
     public class UsersService
     {
-        private IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
-        private IRoleRepository _roleRepository;
-        private IMapper _mapper;
+        private readonly IRoleRepository _roleRepository;
+        private readonly IMapper _mapper;
 
         public UsersService(IUserRepository userRepository, IPasswordHasher passwordHasher, IRoleRepository roleRepository, IMapper mapper)
         {

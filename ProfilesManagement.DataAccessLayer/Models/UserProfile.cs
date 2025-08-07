@@ -27,6 +27,12 @@ namespace ProfilesManagement.DataAccessLayer.Models
         public List<string> FinishedSteps { get; set; } = new List<string>();
 
         [BsonElement("quizzes")]
-        public List<string> Quizzes { get; set; }
+        public List<string> Quizzes { get; set; } = new List<string>();
+
+        [BsonElement("energy")]
+        public int Energy { get; set; } = 100;
+
+        [BsonElement("lastEnergyRefill")]
+        public DateTime LastEnergyRefill { get; set; } = DateTime.UtcNow;
     }
 }

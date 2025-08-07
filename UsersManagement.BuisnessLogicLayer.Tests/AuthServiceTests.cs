@@ -9,6 +9,8 @@ using BuissnessLogicLayer.Models;
 using BuissnessLogicLayer.Services;
 using ProfilesManagement.BuisnessLogicLayer.Services;
 using AutoMapper;
+using UsersManagement.DataAccessLayer.Repositories;
+using UsersManagement.BuissnessLogicLayer.Services;
 
 namespace UsersManagement.BuisnessLogicLayer.Tests
 {
@@ -16,22 +18,28 @@ namespace UsersManagement.BuisnessLogicLayer.Tests
     public class AuthServiceTests
     {
         private readonly Mock<IUserRepository> _userRepositoryMock;
+        private readonly Mock<IPendingUserRepository> _pendingUserRepositoryMock;
         private readonly Mock<IPasswordHasher> _passwordHasherMock;
         private readonly Mock<IRoleRepository> _roleRepositoryMock;
+        private readonly Mock<IEmailService> _emailService;
         private readonly Mock<IMapper> _mapperMock;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
         {
             _userRepositoryMock = new Mock<IUserRepository>();
+            _pendingUserRepositoryMock = new Mock<IPendingUserRepository>();
             _passwordHasherMock = new Mock<IPasswordHasher>();
             _roleRepositoryMock = new Mock<IRoleRepository>();
+            _emailService = new Mock<IEmailService>();
             _mapperMock = new Mock<IMapper>();
             _authService = new AuthService(
                 _userRepositoryMock.Object,
+                _pendingUserRepositoryMock.Object,
                 _passwordHasherMock.Object,
                 _roleRepositoryMock.Object,
-                _mapperMock.Object
+                _mapperMock.Object,
+                _emailService.Object
             );
         }
 
@@ -60,10 +68,8 @@ namespace UsersManagement.BuisnessLogicLayer.Tests
             _roleRepositoryMock.Setup(r => r.GetByTitleAsync("User")).ReturnsAsync(new Role());
             _mapperMock.Setup(m => m.Map<UserDto>(It.IsAny<User>())).Returns(userDto);
 
-            var result = await _authService.SignUpAsync(userSignUp);
+            await _authService.SignUpAsync(userSignUp);
 
-            Assert.NotNull(result);
-            Assert.Equal(userSignUp.Email, result.Email);
             _userRepositoryMock.Verify(r => r.AddAsync(It.IsAny<User>()), Times.Once);
         }
 

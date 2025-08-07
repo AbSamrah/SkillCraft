@@ -104,5 +104,12 @@ namespace SkillCraft.Api.Controllers.ProfileManagement
             var result = await _profileService.CheckRoadmap(userId, roadmapId);
             return Ok(result);
         }
+
+        [HttpGet("energy/{id}")]
+        public async Task<IActionResult> GetEnergy([FromRoute] string id)
+        {
+            int energy = await _profileService.GetEnergy(id);
+            return Ok(energy);
+        }
     }
 }

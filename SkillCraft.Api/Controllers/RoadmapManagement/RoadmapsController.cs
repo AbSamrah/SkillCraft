@@ -49,6 +49,14 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
         public async Task<IActionResult> AddAiAsync([FromBody] PromptParameter parameter)
         {
             var userId = User.FindFirst("id")?.Value;
+            if (User.IsInRole("User"))
+            {
+                var hasEnoughEnergy = await _profileService.CheckAndDeductEnergy(userId, 10);
+                if (!hasEnoughEnergy)
+                {
+                    return StatusCode(429, new { Message = "Not enough energy to generate a roadmap. Please try again later." }); // 429 Too Many Requests
+                }
+            }
             AiRoadmapParameters aiParams = new AiRoadmapParameters();
             aiParams.Prompt = parameter.prompt;
             List<string> stepsIds = new List<string>();

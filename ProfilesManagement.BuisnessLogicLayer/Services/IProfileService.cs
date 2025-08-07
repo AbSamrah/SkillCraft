@@ -35,6 +35,10 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
 
         Task<bool> CheckRoadmap(string userId, string roadmapId);
 
+        Task<bool> CheckAndDeductEnergy(string userId, int amount);
+
+        Task<int> GetEnergy(string id);
+
         Task Remove(string userId);
     }
 }

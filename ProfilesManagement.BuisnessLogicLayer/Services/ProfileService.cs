@@ -181,5 +181,43 @@ namespace ProfilesManagement.BuisnessLogicLayer.Services
             profile.Quizzes.Add(quizId);
             await _profileRepository.Update(profile);
         }
+
+        public async Task<bool> CheckAndDeductEnergy(string userId, int amount)
+        {
+            var profile = await _profileRepository.GetById(userId);
+            if (profile is null)
+            {
+                throw new KeyNotFoundException("Profile not found.");
+            }
+
+
+            if (profile.Energy >= amount)
+            {
+                profile.Energy -= amount;
+                await _profileRepository.Update(profile);
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<int> GetEnergy(string id)
+        {
+            var profile = await _profileRepository.GetById(id);
+            if (profile is null)
+            {
+                throw new KeyNotFoundException("Profile not found.");
+            }
+
+            // Check if a week has passed since the last refill
+            if (profile.LastEnergyRefill.AddDays(7) <= DateTime.UtcNow)
+            {
+                profile.Energy = 100;
+                profile.LastEnergyRefill = DateTime.UtcNow;
+                await _profileRepository.Update(profile);
+            }
+
+            return profile.Energy;
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace UsersManagement.DataAccessLayer.Tests
                 .Options;
             _context = new UsersDbContext(options);
             _passwordHasher = new PasswordHasher();
-            _userRepository = new UserRepository(_context, _passwordHasher);
+            _userRepository = new UserRepository(_context);
         }
 
         [Fact]
