@@ -54,7 +54,7 @@ namespace SkillCraft.Api.Controllers.RoadmapManagement
                 var hasEnoughEnergy = await _profileService.CheckAndDeductEnergy(userId, 10);
                 if (!hasEnoughEnergy)
                 {
-                    return StatusCode(429, new { Message = "Not enough energy to generate a roadmap. Please try again later." }); // 429 Too Many Requests
+                    return StatusCode(429, new { Message = "Not enough energy to generate a roadmap. Please try again later." }); 
                 }
             }
             AiRoadmapParameters aiParams = new AiRoadmapParameters();

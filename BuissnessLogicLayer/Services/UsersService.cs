@@ -27,7 +27,7 @@ namespace BuissnessLogicLayer.Services
             _mapper = mapper;
         }
 
-        public async Task<AddUserRequest> AddAsync(AddUserRequest addUserRequest)
+        public async Task<UserDto> AddAsync(AddUserRequest addUserRequest)
         {
             if (await _userRepository.UserExistsAsync(addUserRequest.Email))
             {
@@ -47,8 +47,7 @@ namespace BuissnessLogicLayer.Services
             user.RoleId = role.Id;
             await _userRepository.AddAsync(user);
 
-            addUserRequest.Password = null;
-            return addUserRequest;
+            return _mapper.Map<UserDto>(user);
         }
 
         public async Task<UserDto> GetByIdAsync(Guid id)
@@ -70,33 +69,45 @@ namespace BuissnessLogicLayer.Services
             return _mapper.Map<List<UserDto>>(users);
         }
 
-        public async Task<UpdateUserRequest> UpdateAsync(UpdateUserRequest updateUserRequest)
+        public async Task<(UserDto user, ProfileAction profileAction)> UpdateAsync(Guid id, UpdateUserRequest updateUserRequest)
         {
-            var user = await _userRepository.GetByEmailAsync(updateUserRequest.Email);
-            if( user is null)
+            var user = await _userRepository.GetAsync(id);
+            if (user == null)
             {
-                return null;
+                throw new Exception("User not found.");
             }
+
+            var profileAction = ProfileAction.NONE;
+            var currentRole = user.Role.Title;
+            var newRoleTitle = updateUserRequest.Role;
+
+            if (currentRole != newRoleTitle)
+            {
+                var newRole = await _roleRepository.GetByTitleAsync(newRoleTitle);
+                if (newRole == null)
+                {
+                    throw new Exception($"Role '{newRoleTitle}' not found.");
+                }
+                user.Role = newRole;
+                user.RoleId = newRole.Id;
+
+                if (currentRole == "User" && newRoleTitle != "User")
+                {
+                    profileAction = ProfileAction.DELETE_PROFILE;
+                }
+                else if (currentRole != "User" && newRoleTitle == "User")
+                {
+                    profileAction = ProfileAction.CREATE_PROFILE;
+                }
+            }
+
             user.FirstName = updateUserRequest.FirstName;
             user.LastName = updateUserRequest.LastName;
-            user.Email = updateUserRequest.Email;
-            user.PasswordHash = _passwordHasher.Hash(updateUserRequest.Password);
 
-            var role = await _roleRepository.GetByTitleAsync(updateUserRequest.Role);
-            if (role is null)
-            {
-                throw new Exception("This Role doesn't exist.");
-            }
-            user.RoleId = role.Id;
 
-            user = await _userRepository.UpdateAsync(user);
-            if (user is null)
-            {
-                throw new Exception("Some thing went wrong.");
-            }
-            updateUserRequest = _mapper.Map<UpdateUserRequest>(user);
-            updateUserRequest.Password = null;
-            return updateUserRequest;
+            var updatedUser = await _userRepository.UpdateAsync(user);
+            var userDto = _mapper.Map<UserDto>(updatedUser);
+            return (userDto, profileAction);
         }
 
         public async Task<UpdateUserRequest> DeleteAsync(Guid id)
@@ -109,14 +120,14 @@ namespace BuissnessLogicLayer.Services
             return _mapper.Map<UpdateUserRequest>(user);
         }
 
-        public async Task<UpdateUserRequest> GetByEmailAsync(string email)
+        public async Task<UserDto> GetByEmailAsync(string email)
         {
             var user = await _userRepository.GetByEmailAsync(email);
             if (user is null)
             {
                 return null;
             }
-            return _mapper.Map<UpdateUserRequest>(user);
+            return _mapper.Map<UserDto>(user);
         }
     }
 }

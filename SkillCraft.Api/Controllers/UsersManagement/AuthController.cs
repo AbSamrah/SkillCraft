@@ -15,12 +15,14 @@ namespace API.Controllers
         private readonly AuthService _authService;
         private readonly ITokenService _tokenService;
         private readonly IProfileService _profileService;
+        private readonly UsersService _usersService;
 
-        public AuthController(AuthService authService, ITokenService tokenService, IProfileService profileService)
+        public AuthController(AuthService authService, UsersService usersService,ITokenService tokenService, IProfileService profileService)
         {
             _authService = authService;
             _tokenService = tokenService;
             _profileService = profileService;
+            _usersService = usersService;
         }
 
         [HttpPost]
@@ -34,6 +36,13 @@ namespace API.Controllers
         [HttpGet("verify-email")]
         public async Task<IActionResult> VerifyEmail(string email, string token)
         {
+            var existingUser = await _usersService.GetByEmailAsync(email);
+            if (existingUser is not null)
+            {
+                var alreadyVerifiedToken = await _tokenService.GenerateToken(existingUser);
+                return Ok(new { Message = "Email is already verified.", Token = alreadyVerifiedToken });
+            }
+
             var user = await _authService.VerifyEmailAsync(email, token);
             await _profileService.Add(user.Id.ToString());
 

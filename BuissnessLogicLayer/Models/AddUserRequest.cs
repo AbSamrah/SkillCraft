@@ -10,7 +10,6 @@ namespace BuissnessLogicLayer.Models
 {
     public class AddUserRequest
     {
-        public Guid Id { get; set; }
         [Required]
         public string FirstName { get; set; }
         [Required]

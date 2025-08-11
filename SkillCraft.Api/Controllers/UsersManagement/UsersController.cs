@@ -54,16 +54,16 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AddUserRequest user)
         {   
-            user = await _usersService.AddAsync(user);
-            if(user.Role == "User")
+            var newUser = await _usersService.AddAsync(user);
+            if(newUser.Role == "User")
             {
-                await _profileService.Add(user.Id.ToString());
+                await _profileService.Add(newUser.Id.ToString());
             }
-            if (user is null)
+            if (newUser is null)
             {
                 return NotFound();
             }
-            return CreatedAtRoute("GetUserAsync", new { id = user.Id }, user);
+            return CreatedAtRoute("GetUserAsync", new { id = newUser.Id }, newUser);
         }
 
         [HttpDelete("{id}")]
@@ -79,14 +79,35 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UpdateUserRequest updateUserRequest)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateUserRequest updateUserRequest)
         {
-            updateUserRequest = await _usersService.UpdateAsync(updateUserRequest);
-            if (updateUserRequest is null)
+            if (!Guid.TryParse(id, out Guid userId))
             {
-                return NotFound();
+                return BadRequest(new { message = "Invalid user ID format." });
             }
-            return Ok(updateUserRequest);
+
+            try
+            {
+                var (user, profileAction) = await _usersService.UpdateAsync(userId, updateUserRequest);
+
+                switch (profileAction)
+                {
+                    case ProfileAction.CREATE_PROFILE:
+                        await _profileService.Add(user.Id.ToString());
+                        break;
+                    case ProfileAction.DELETE_PROFILE:
+                        await _profileService.Remove(user.Id.ToString());
+                        break;
+                    case ProfileAction.NONE:
+                        break;
+                }
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
